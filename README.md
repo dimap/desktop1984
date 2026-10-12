@@ -8,14 +8,9 @@
   <a href="https://www.youtube.com/watch?v=WFF6Xn0L_tY">Full demo video</a> · <a href="README.ru.md">Русская версия</a>
 </p>
 
-An animated wallpaper for KDE Plasma 6. The camera glides at an angle over a
-1-bit desktop whose every pixel is a tile floating above a plain gradient. The
-tiles grow out of an empty background, the view drifts along a window or a row
-of icons, and then it comes to rest as a still wallpaper.
-
-The animation is inspired by the "Macintosh" wallpaper of macOS Sequoia. All
-artwork here is original or comes from free KDE screenshots; see
-[Licences](#licences).
+An animated wallpaper for KDE Plasma 6. The animation is inspired by the
+"Macintosh" wallpaper of macOS Sequoia. All artwork is original or comes from
+free KDE screenshots; see [Licences](#licences).
 
 ## This project was made with AI!
 
@@ -33,8 +28,8 @@ the goals, made the design decisions and tested the result on a real desktop.
   down and converted to black and white on the fly, with brightness, contrast
   and dithering under your control.
 - **Still or moving**: by default the picture appears, glides to a halt and
-  stays still, costing nothing afterwards. It can replay every few minutes, or
-  run continuously like a screen saver.
+  stays still. It can replay every few minutes, or run continuously like a
+  screen saver.
 - **Colors**: a spectrum that drifts through every hue while the picture moves,
   or one of seven fixed colors.
 - **Adjustable look**: pixel size, gap, pixel opacity, shadow softness and
