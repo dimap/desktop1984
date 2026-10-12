@@ -17,6 +17,13 @@ The animation is inspired by the "Macintosh" wallpaper of macOS Sequoia. All
 artwork here is original or comes from free KDE screenshots; see
 [Licences](#licences).
 
+## Made with AI
+
+This project was made with AI assistance. The code, the shader, the retro
+desktop artwork and this documentation were written by Claude, an AI model by
+Anthropic, working in Claude Code under the direction of the author, who set
+the goals, made the design decisions and tested the result on a real desktop.
+
 ## Features
 
 - **Four bundled pictures**: a retro desktop drawn for this wallpaper, and

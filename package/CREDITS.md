@@ -3,6 +3,12 @@
 Desktop 1984 is free software under the GNU General Public License, version 2
 or (at your option) any later version. See `LICENSE`.
 
+## Made with AI
+
+This project was made with AI assistance. The code, the shader, the retro
+desktop artwork and the documentation were written by Claude, an AI model by
+Anthropic, under the direction of the author.
+
 ## Bundled pictures
 
 | Picture | Origin | Licence |
