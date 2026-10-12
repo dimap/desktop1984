@@ -1,0 +1,18 @@
+{
+    "KPackageStructure": "Plasma/Wallpaper",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "dimap"
+            }
+        ],
+        "Description": "A slow flyover of a 1-bit retro desktop built from giant pixels",
+        "Description[ru]": "Медленный полёт над однобитным ретро-рабочим столом из огромных пикселей",
+        "Icon": "preferences-desktop-wallpaper",
+        "Id": "org.dimap.desktop1984",
+        "License": "GPL-2.0-or-later",
+        "Name": "Desktop 1984",
+        "Version": "1.0"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

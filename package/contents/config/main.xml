@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kcfg xmlns="http://www.kde.org/standards/kcfg/1.0"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0
+      http://www.kde.org/standards/kcfg/1.0/kcfg.xsd">
+  <kcfgfile name=""/>
+
+  <group name="General">
+    <entry name="Picture" type="String">
+      <label>Id of a bundled picture, or "custom"</label>
+      <default>retro</default>
+    </entry>
+    <entry name="CustomImage" type="String">
+      <label>URL of the image used when Picture is "custom"</label>
+      <default></default>
+    </entry>
+    <entry name="ImageWidth" type="Int">
+      <label>Cells a custom image is scaled to across</label>
+      <default>480</default>
+    </entry>
+    <entry name="Brightness" type="Int">
+      <label>Mid-tone shift for the black and white conversion, -100..100</label>
+      <default>0</default>
+    </entry>
+    <entry name="Contrast" type="Int">
+      <label>Contrast for the black and white conversion, percent</label>
+      <default>100</default>
+    </entry>
+    <entry name="Dither" type="Bool">
+      <label>Ordered dither instead of a plain threshold</label>
+      <default>true</default>
+    </entry>
+    <entry name="Invert" type="Bool">
+      <label>Swap ink and paper</label>
+      <default>false</default>
+    </entry>
+    <entry name="Theme" type="Int">
+      <label>0 is the drifting spectrum, N pins palette N-1</label>
+      <default>0</default>
+    </entry>
+    <entry name="StopAfterIntro" type="Bool">
+      <label>Glide to a halt after the first scene and stay still</label>
+      <default>true</default>
+    </entry>
+    <entry name="ReplayMinutes" type="Int">
+      <label>Replay a scene this often once stopped, 0 never</label>
+      <default>0</default>
+    </entry>
+    <entry name="PixelSize" type="Int">
+      <label>Screen pixels per bitmap cell, 0 picks it from the screen width</label>
+      <default>0</default>
+    </entry>
+    <entry name="Speed" type="Int">
+      <label>Animation speed, percent</label>
+      <default>100</default>
+    </entry>
+    <entry name="Gap" type="Int">
+      <label>Gap between tiles, percent of a cell</label>
+      <default>10</default>
+    </entry>
+    <entry name="TileOpacity" type="Int">
+      <label>How dark a tile is against the background, percent</label>
+      <default>16</default>
+    </entry>
+    <entry name="ShadowSoftness" type="Int">
+      <label>How far a shadow fades out past its tile, percent of a cell</label>
+      <default>60</default>
+    </entry>
+    <entry name="ShadowStrength" type="Int">
+      <label>How much the darkest part of a shadow darkens the background, percent</label>
+      <default>10</default>
+    </entry>
+    <entry name="AppearSoftness" type="Int">
+      <label>0 sweeps the tiles in as a sharp wave, 100 grows them all at once</label>
+      <default>50</default>
+    </entry>
+  </group>
+</kcfg>
