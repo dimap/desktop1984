@@ -1,11 +1,11 @@
 <h1 align="center">Desktop 1984</h1>
 
 <p align="center">
-  <a href="https://www.youtube.com/watch?v=6VsyN4ilMFE"><img src="demo/preview.gif" width="720" alt="Desktop 1984 в движении"></a>
+  <a href="https://www.youtube.com/watch?v=WFF6Xn0L_tY"><img src="demo/preview.gif" width="720" alt="Desktop 1984 в движении"></a>
 </p>
 
 <p align="center">
-  <a href="https://www.youtube.com/watch?v=6VsyN4ilMFE">Полное демо-видео</a> · <a href="README.md">English version</a>
+  <a href="https://www.youtube.com/watch?v=WFF6Xn0L_tY">Полное демо-видео</a> · <a href="README.md">English version</a>
 </p>
 
 Анимированные обои для KDE Plasma 6. Камера под углом скользит над однобитным
