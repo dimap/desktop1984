@@ -1,7 +1,7 @@
-<h1 align="center">Desktop 1984</h1>
+<h1 align="center">xflyover</h1>
 
 <p align="center">
-  <a href="https://www.youtube.com/watch?v=WFF6Xn0L_tY"><img src="demo/preview.gif" width="720" alt="Desktop 1984 in motion"></a>
+  <a href="https://www.youtube.com/watch?v=WFF6Xn0L_tY"><img src="demo/preview.gif" width="720" alt="xflyover in motion"></a>
 </p>
 
 <p align="center">
@@ -52,8 +52,8 @@ The easiest way, with nothing to download by hand:
 
 1. Right-click the desktop and choose **Desktop and Wallpaper**.
 2. Click **Get New Plugins…** next to the wallpaper type.
-3. Search for **Desktop 1984** and click **Install**.
-4. Pick **Desktop 1984** as the wallpaper type.
+3. Search for **xflyover** and click **Install**.
+4. Pick **xflyover** as the wallpaper type.
 
 Updates arrive the same way, through that dialog or Discover.
 
@@ -69,7 +69,7 @@ or, with `make` (this also rebuilds the shader and the pictures, see
     make install
 
 Then right-click the desktop, choose **Desktop and Wallpaper**, and pick
-**Desktop 1984** as the wallpaper type.
+**xflyover** as the wallpaper type.
 
 After upgrading an installed copy, restart the shell so Plasma reloads it:
 
@@ -78,6 +78,9 @@ After upgrading an installed copy, restart the shell so Plasma reloads it:
 To remove it:
 
     kpackagetool6 --type Plasma/Wallpaper --remove org.dimap.desktop1984
+
+(The internal id still carries the project's earlier name, Desktop 1984, so
+that existing installations keep receiving updates.)
 
 ## Settings
 
@@ -135,9 +138,9 @@ in `package/`. To change the shader or the pictures you need:
 | `make preview` | Shows the effect in a plain window, without Plasma |
 | `make install` | Builds, then installs or upgrades the wallpaper for the current user |
 | `make uninstall` | Removes it |
-| `make demo` | Renders `demo/desktop1984-demo.mp4` and `demo/preview.gif` frame by frame |
+| `make demo` | Renders `demo/xflyover-demo.mp4` and `demo/preview.gif` frame by frame |
 | `make screenshots` | Renders the still pictures in `screenshots/` |
-| `make dist` | Packs `dist/desktop1984-<version>.tar.gz`, the archive for store.kde.org |
+| `make dist` | Packs `dist/xflyover-<version>.tar.gz`, the archive for store.kde.org |
 
 Layout:
 
@@ -153,7 +156,7 @@ Layout:
 
 ## Licences
 
-Desktop 1984 is free software under the **GNU General Public License, version 2
+xflyover is free software under the **GNU General Public License, version 2
 or (at your option) any later version**. The full text is in [`LICENSE`](LICENSE).
 
 | Files | Origin | Licence |

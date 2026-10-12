@@ -12,7 +12,7 @@ Window {
     width: 1280
     height: 720
     visible: true
-    title: "Desktop 1984 screenshots"
+    title: "xflyover screenshots"
 
     readonly property size imageSize: Qt.size(1920, 1080)
 

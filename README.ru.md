@@ -1,7 +1,7 @@
-<h1 align="center">Desktop 1984</h1>
+<h1 align="center">xflyover</h1>
 
 <p align="center">
-  <a href="https://www.youtube.com/watch?v=WFF6Xn0L_tY"><img src="demo/preview.gif" width="720" alt="Desktop 1984 в движении"></a>
+  <a href="https://www.youtube.com/watch?v=WFF6Xn0L_tY"><img src="demo/preview.gif" width="720" alt="xflyover в движении"></a>
 </p>
 
 <p align="center">
@@ -53,8 +53,8 @@
 1. Щёлкните правой кнопкой по рабочему столу и выберите **Настроить рабочий
    стол и обои**.
 2. Нажмите **Загрузить новые модули…** рядом с типом обоев.
-3. Найдите **Desktop 1984** и нажмите **Установить**.
-4. Выберите тип обоев **Desktop 1984**.
+3. Найдите **xflyover** и нажмите **Установить**.
+4. Выберите тип обоев **xflyover**.
 
 Обновления приходят тем же путём: через этот диалог или Discover.
 
@@ -70,7 +70,7 @@
     make install
 
 Затем щёлкните правой кнопкой по рабочему столу, выберите **Настроить рабочий
-стол и обои** и укажите тип обоев **Desktop 1984**.
+стол и обои** и укажите тип обоев **xflyover**.
 
 После обновления уже установленной копии перезапустите оболочку, чтобы Plasma
 загрузила новую версию:
@@ -80,6 +80,9 @@
 Удаление:
 
     kpackagetool6 --type Plasma/Wallpaper --remove org.dimap.desktop1984
+
+(Во внутреннем идентификаторе осталось прежнее название проекта, Desktop 1984,
+чтобы уже установленные копии продолжали получать обновления.)
 
 ## Настройки
 
@@ -140,9 +143,9 @@ pixels** его ширину.
 | `make preview` | Показывает эффект в обычном окне, без Plasma |
 | `make install` | Собирает и устанавливает либо обновляет обои для текущего пользователя |
 | `make uninstall` | Удаляет их |
-| `make demo` | Покадрово рендерит `demo/desktop1984-demo.mp4` и `demo/preview.gif` |
+| `make demo` | Покадрово рендерит `demo/xflyover-demo.mp4` и `demo/preview.gif` |
 | `make screenshots` | Рендерит неподвижные кадры в `screenshots/` |
-| `make dist` | Собирает `dist/desktop1984-<версия>.tar.gz` — архив для store.kde.org |
+| `make dist` | Собирает `dist/xflyover-<версия>.tar.gz` — архив для store.kde.org |
 
 Структура:
 
@@ -158,7 +161,7 @@ pixels** его ширину.
 
 ## Лицензии
 
-Desktop 1984 — свободное программное обеспечение под **GNU General Public
+xflyover — свободное программное обеспечение под **GNU General Public
 License версии 2 или (на ваш выбор) любой более поздней**. Полный текст — в
 файле [`LICENSE`](LICENSE).
 

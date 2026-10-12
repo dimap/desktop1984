@@ -1,6 +1,6 @@
 # Credits and licences
 
-Desktop 1984 is free software under the GNU General Public License, version 2
+xflyover is free software under the GNU General Public License, version 2
 or (at your option) any later version. See `LICENSE`.
 
 ## Made with AI

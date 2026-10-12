@@ -8,7 +8,7 @@ Window {
     width: 1280
     height: 720
     visible: true
-    title: "Desktop 1984"
+    title: "xflyover"
 
     PixelFlight {
         anchors.fill: parent

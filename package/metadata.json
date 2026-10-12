@@ -11,9 +11,9 @@
         "Icon": "preferences-desktop-wallpaper",
         "Id": "org.dimap.desktop1984",
         "License": "GPL-2.0-or-later",
-        "Name": "Desktop 1984",
-        "Version": "1.1.1",
-        "Website": "https://github.com/dimap/desktop1984"
+        "Name": "xflyover",
+        "Version": "1.2",
+        "Website": "https://github.com/dimap/xflyover"
     },
     "X-Plasma-API-Minimum-Version": "6.0"
 }

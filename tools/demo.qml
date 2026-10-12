@@ -12,7 +12,7 @@ Window {
     width: 1280
     height: 720
     visible: true
-    title: "Desktop 1984 demo"
+    title: "xflyover demo"
 
     readonly property int fps: 30
     readonly property size videoSize: Qt.size(1920, 1080)

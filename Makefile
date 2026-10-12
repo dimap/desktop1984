@@ -3,7 +3,7 @@ ID := org.dimap.desktop1984
 SHADER := $(PKG)/contents/shaders/pixels.frag
 
 VERSION := $(shell python3 -c "import json; print(json.load(open('$(PKG)/metadata.json'))['KPlugin']['Version'])")
-DIST := dist/desktop1984-$(VERSION).tar.gz
+DIST := dist/xflyover-$(VERSION).tar.gz
 
 .PHONY: build art preview demo screenshots dist install uninstall
 
@@ -29,8 +29,8 @@ demo: build
 	rm -rf build/frames && mkdir -p build/frames demo
 	qml-qt6 tools/demo.qml
 	ffmpeg -v error -y -framerate 30 -i build/frames/%05d.jpg -vf scale=1920:1080:flags=lanczos \
-		-c:v libx264 -crf 20 -preset slow -pix_fmt yuv420p -movflags +faststart demo/desktop1984-demo.mp4
-	ffmpeg -v error -y -i demo/desktop1984-demo.mp4 -filter_complex "\
+		-c:v libx264 -crf 20 -preset slow -pix_fmt yuv420p -movflags +faststart demo/xflyover-demo.mp4
+	ffmpeg -v error -y -i demo/xflyover-demo.mp4 -filter_complex "\
 		[0:v]trim=0:8,setpts=PTS-STARTPTS[a];[0:v]trim=16:24,setpts=PTS-STARTPTS[b];\
 		[0:v]trim=32:42.5,setpts=PTS-STARTPTS[c];[a][b][c]concat=n=3:v=1,fps=12,\
 		scale=640:-1:flags=lanczos,split[x][y];[x]palettegen=max_colors=128:stats_mode=diff[p];\
