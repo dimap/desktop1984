@@ -42,8 +42,8 @@ SCENES = [
     ((250, 270), (250, 440), -1, DOWN),   # eyes and load graph
     ((425, 480), (425, 300), 1, UP),      # calculator
     ((720, 340), (540, 340), -1, LEFT),   # second terminal
-    ((686, 380), (686, 496), 1, DOWN),    # window manager menu
-    ((600, 446), (380, 446), 1, LEFT),    # mailbox and calculator keys
+    ((696, 396), (696, 500), 1, DOWN),    # window manager menu
+    ((600, 452), (380, 452), 1, LEFT),    # mailbox and calculator keys
 ]
 
 # The session in the big terminal, and the word selected in it.
@@ -183,7 +183,10 @@ def window(x, y, w, h, title, focused=False):
     return y + TITLE_H + 1  # top of the contents
 
 
-def xterm(x, y, w, h, lines, focused=False, selected=None):
+def xterm(x, y, w, lines, focused=False, selected=None):
+    """A terminal exactly tall enough for its lines."""
+    h = TITLE_H + 1 + 4 + len(lines) * 13 + 6
+    assert max(tw(line) for line in lines) <= w - 26, "line too long for the terminal"
     top = window(x, y, w, h, "xterm", focused)
     d.line([x + 14, top, x + 14, y + h - 3], fill=INK)  # scrollbar
     rect_fill([x + 3, top + 1, x + 12, top + (h - TITLE_H) * 2 // 3], "gray50")
@@ -221,7 +224,7 @@ def root():
 
 
 def terminal():
-    xterm(20, 24, 330, 196, SESSION, focused=True, selected=SELECTED)
+    xterm(20, 24, 330, SESSION, focused=True, selected=SELECTED)
 
 
 def bitmap_editor():
@@ -322,7 +325,7 @@ def calculator():
 
 
 def second_terminal():
-    xterm(522, 292, 226, 96, [
+    xterm(522, 292, 226, [
         "$ ls /",
         "bin   dev   home  mnt   root  usr",
         "boot  etc   lib   proc  tmp   var",
@@ -333,7 +336,7 @@ def second_terminal():
 
 
 def mailbox():
-    x, y, w, h = 522, 402, 80, 88
+    x, y, w, h = 522, 410, 80, 88
     top = window(x, y, w, h, "xbiff")
     cx = x + w // 2
     d.rectangle([cx - 2, top + 40, cx + 2, top + 64], fill=INK)                    # post
@@ -344,8 +347,8 @@ def mailbox():
 
 
 def twm_menu():
-    x, y, w, row = 630, 372, 112, 16
-    items = ["Iconify", "Resize", "Move", "Raise", "Lower", "Kill", "Exit"]
+    x, y, w, row = 640, 392, 112, 16
+    items = ["Iconify", "Resize", "Move", "Raise", "Kill", "Exit"]
     h = (len(items) + 1) * row + 2
     rect_fill([x + 4, y + 4, x + w + 3, y + h + 3], "black")  # menu shadow
     d.rectangle([x, y, x + w - 1, y + h - 1], fill=PAPER, outline=INK)
