@@ -49,6 +49,21 @@ the goals, made the design decisions and tested the result on a real desktop.
 
 ## Install
 
+### From the KDE Store
+
+Store page: <https://www.opendesktop.org/p/2378213/>
+
+The easiest way, with nothing to download by hand:
+
+1. Right-click the desktop and choose **Desktop and Wallpaper**.
+2. Click **Get New Plugins…** next to the wallpaper type.
+3. Search for **Desktop 1984** and click **Install**.
+4. Pick **Desktop 1984** as the wallpaper type.
+
+Updates arrive the same way, through that dialog or Discover.
+
+### From this repository
+
 The package is ready to install as it is in this repository:
 
     kpackagetool6 --type Plasma/Wallpaper --install package
