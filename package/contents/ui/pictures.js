@@ -7,11 +7,15 @@ var custom = "custom"
 
 var list = [
     { id: "retro", name: "Retro desktop", file: "world.png", tile: true, scenes: Scene.scenes },
-    { id: "kde1", name: "KDE 1.0 (1998)", file: "kde1.png", scenes: [
-        { x0: 62, y0: 30, x1: 62, y1: 300, yaw: -1, rampX: 0, rampY: 1 },
-        { x0: 62, y0: 570, x1: 62, y1: 300, yaw: 1, rampX: 0, rampY: -1 },
-        { x0: 50, y0: 738, x1: 420, y1: 738, yaw: 1, rampX: 1, rampY: 0 },
-        { x0: 780, y0: 738, x1: 430, y1: 738, yaw: -1, rampX: -1, rampY: 0 }
+    { id: "kde1", name: "KDE 1.1 (1999)", file: "kde1.png", scenes: [
+        { x0: 150, y0: 215, x1: 450, y1: 215, yaw: -1, rampX: 1, rampY: 0 },
+        { x0: 620, y0: 420, x1: 920, y1: 420, yaw: 1, rampX: 1, rampY: 0 },
+        { x0: 150, y0: 620, x1: 150, y1: 900, yaw: -1, rampX: 0, rampY: 1 },
+        { x0: 380, y0: 560, x1: 380, y1: 790, yaw: 1, rampX: 0, rampY: 1 },
+        { x0: 1225, y0: 200, x1: 1225, y1: 480, yaw: -1, rampX: 0, rampY: 1 },
+        { x0: 60, y0: 935, x1: 360, y1: 935, yaw: 1, rampX: 1, rampY: 0 },
+        { x0: 35, y0: 60, x1: 35, y1: 340, yaw: 1, rampX: 0, rampY: 1 },
+        { x0: 500, y0: 12, x1: 200, y1: 12, yaw: -1, rampX: -1, rampY: 0 }
     ] },
     { id: "kde2", name: "KDE 2.2 (2001)", file: "kde2.png", scenes: [
         { x0: 380, y0: 180, x1: 680, y1: 180, yaw: 1, rampX: 1, rampY: 0 },

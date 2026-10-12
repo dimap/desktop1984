@@ -20,7 +20,7 @@ artwork here is original or comes from free KDE screenshots; see
 ## Features
 
 - **Four bundled pictures**: a retro desktop drawn for this wallpaper, and
-  screenshots of KDE 1.0 (1998), KDE 2.2 (2001) and KDE 3.5 (2005) reduced to
+  screenshots of KDE 1.1 (1999), KDE 2.2 (2001) and KDE 3.5 (2005) reduced to
   black and white.
 - **Your own picture**: any PNG, JPEG, WebP, BMP, GIF or SVG file. It is scaled
   down and converted to black and white on the fly, with brightness, contrast
@@ -119,6 +119,8 @@ in `package/`. To change the shader or the pictures you need:
 | `make install` | Builds, then installs or upgrades the wallpaper for the current user |
 | `make uninstall` | Removes it |
 | `make demo` | Renders `demo/desktop1984-demo.mp4` and `demo/preview.gif` frame by frame |
+| `make screenshots` | Renders the still pictures in `screenshots/` |
+| `make dist` | Packs `dist/desktop1984-<version>.tar.gz`, the archive for store.kde.org |
 
 Layout:
 
@@ -141,7 +143,7 @@ or (at your option) any later version**. The full text is in [`LICENSE`](LICENSE
 |---|---|---|
 | Source code, shader, build scripts | Written for this project | GPL-2.0-or-later |
 | `package/contents/images/world.png` | Original artwork, drawn by `tools/gen_art.py` | GPL-2.0-or-later |
-| `package/contents/images/kde1.png` | 1-bit conversion of [KDE 1.0.png](https://commons.wikimedia.org/wiki/File:KDE_1.0.png), screenshot by the KDE development team | GPL |
+| `package/contents/images/kde1.png` | 1-bit conversion of [KDE 1.1.jpg](https://commons.wikimedia.org/wiki/File:KDE_1.1.jpg), screenshot by the KDE development team | GPL |
 | `package/contents/images/kde2.png` | 1-bit conversion of [KDE 2.2.2.png](https://commons.wikimedia.org/wiki/File:KDE_2.2.2.png), screenshot by the KDE development team | GPL |
 | `package/contents/images/kde3.png` | 1-bit conversion of [KDE 3.5 screenshot.png](https://commons.wikimedia.org/wiki/File:KDE_3.5_screenshot.png), screenshot by Golradir | GPL |
 | `tools/sources/*` | The unmodified screenshots above, from Wikimedia Commons | GPL |

@@ -20,7 +20,7 @@
 ## Возможности
 
 - **Четыре встроенные картинки**: ретро-рабочий стол, нарисованный для этих
-  обоев, и скриншоты KDE 1.0 (1998), KDE 2.2 (2001) и KDE 3.5 (2005),
+  обоев, и скриншоты KDE 1.1 (1999), KDE 2.2 (2001) и KDE 3.5 (2005),
   переведённые в чёрно-белое.
 - **Своя картинка**: любой файл PNG, JPEG, WebP, BMP, GIF или SVG. Он
   уменьшается и переводится в чёрно-белое на лету; яркость, контраст и
@@ -123,6 +123,8 @@ pixels** его ширину.
 | `make install` | Собирает и устанавливает либо обновляет обои для текущего пользователя |
 | `make uninstall` | Удаляет их |
 | `make demo` | Покадрово рендерит `demo/desktop1984-demo.mp4` и `demo/preview.gif` |
+| `make screenshots` | Рендерит неподвижные кадры в `screenshots/` |
+| `make dist` | Собирает `dist/desktop1984-<версия>.tar.gz` — архив для store.kde.org |
 
 Структура:
 
@@ -146,7 +148,7 @@ License версии 2 или (на ваш выбор) любой более п�
 |---|---|---|
 | Исходный код, шейдер, сборочные скрипты | Написаны для этого проекта | GPL-2.0-or-later |
 | `package/contents/images/world.png` | Оригинальная графика, рисуется скриптом `tools/gen_art.py` | GPL-2.0-or-later |
-| `package/contents/images/kde1.png` | Однобитная версия [KDE 1.0.png](https://commons.wikimedia.org/wiki/File:KDE_1.0.png), скриншот команды разработчиков KDE | GPL |
+| `package/contents/images/kde1.png` | Однобитная версия [KDE 1.1.jpg](https://commons.wikimedia.org/wiki/File:KDE_1.1.jpg), скриншот команды разработчиков KDE | GPL |
 | `package/contents/images/kde2.png` | Однобитная версия [KDE 2.2.2.png](https://commons.wikimedia.org/wiki/File:KDE_2.2.2.png), скриншот команды разработчиков KDE | GPL |
 | `package/contents/images/kde3.png` | Однобитная версия [KDE 3.5 screenshot.png](https://commons.wikimedia.org/wiki/File:KDE_3.5_screenshot.png), скриншот Golradir | GPL |
 | `tools/sources/*` | Те же скриншоты без изменений, с Wikimedia Commons | GPL |

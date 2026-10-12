@@ -8,7 +8,7 @@ or (at your option) any later version. See `LICENSE`.
 | Picture | Origin | Licence |
 |---|---|---|
 | `contents/images/world.png` | Original artwork, drawn for this wallpaper by `tools/gen_art.py` | GPL-2.0-or-later |
-| `contents/images/kde1.png` | 1-bit conversion of [KDE 1.0.png](https://commons.wikimedia.org/wiki/File:KDE_1.0.png), screenshot by the KDE development team | GPL |
+| `contents/images/kde1.png` | 1-bit conversion of [KDE 1.1.jpg](https://commons.wikimedia.org/wiki/File:KDE_1.1.jpg), screenshot by the KDE development team | GPL |
 | `contents/images/kde2.png` | 1-bit conversion of [KDE 2.2.2.png](https://commons.wikimedia.org/wiki/File:KDE_2.2.2.png), screenshot by the KDE development team (uploaded by KAMiKAZOW) | GPL |
 | `contents/images/kde3.png` | 1-bit conversion of [KDE 3.5 screenshot.png](https://commons.wikimedia.org/wiki/File:KDE_3.5_screenshot.png), screenshot by Golradir | GPL |
 
