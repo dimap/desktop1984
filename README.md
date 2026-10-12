@@ -1,11 +1,11 @@
 <h1 align="center">Desktop 1984</h1>
 
 <p align="center">
-  <a href="demo/desktop1984-demo.mp4"><img src="demo/preview.gif" width="720" alt="Desktop 1984 in motion"></a>
+  <a href="https://www.youtube.com/watch?v=6VsyN4ilMFE"><img src="demo/preview.gif" width="720" alt="Desktop 1984 in motion"></a>
 </p>
 
 <p align="center">
-  <a href="demo/desktop1984-demo.mp4">Full demo video</a> · <a href="README.ru.md">Русская версия</a>
+  <a href="https://www.youtube.com/watch?v=6VsyN4ilMFE">Full demo video</a> · <a href="README.ru.md">Русская версия</a>
 </p>
 
 An animated wallpaper for KDE Plasma 6. The camera glides at an angle over a
@@ -17,7 +17,7 @@ The animation is inspired by the "Macintosh" wallpaper of macOS Sequoia. All
 artwork here is original or comes from free KDE screenshots; see
 [Licences](#licences).
 
-## This project was made with AI
+## This project was made with AI!
 
 This project was made with AI assistance. The code, the shader, the retro
 desktop artwork and this documentation were written by Claude, an AI model by
