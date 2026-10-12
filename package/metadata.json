@@ -12,7 +12,7 @@
         "Id": "org.dimap.desktop1984",
         "License": "GPL-2.0-or-later",
         "Name": "Desktop 1984",
-        "Version": "1.0",
+        "Version": "1.1",
         "Website": "https://github.com/dimap/desktop1984"
     },
     "X-Plasma-API-Minimum-Version": "6.0"

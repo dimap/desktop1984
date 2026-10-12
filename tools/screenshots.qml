@@ -16,12 +16,11 @@ Window {
 
     readonly property size imageSize: Qt.size(1920, 1080)
 
-    // x, y is the point of the picture the view comes to rest on. The KDE
-    // screenshots are much larger than the retro desktop, so they get a
-    // smaller pixel size to fit something recognisable into the frame.
+    // x, y is the point of the picture the view comes to rest on. A pixel
+    // size smaller than the automatic one fits whole windows into the frame.
     readonly property var shots: [
-        { name: "01-retro-desktop", picture: "retro", theme: 1, x: 200, y: 125, yaw: -1, pixelSize: 0 },
-        { name: "02-retro-notes", picture: "retro", theme: 6, x: 510, y: 385, yaw: 1, pixelSize: 0 },
+        { name: "01-retro-desktop", picture: "retro", theme: 1, x: 160, y: 115, yaw: -1, pixelSize: 6 },
+        { name: "02-retro-xeyes", picture: "retro", theme: 6, x: 175, y: 335, yaw: 1, pixelSize: 6 },
         { name: "03-kde-2.2", picture: "kde2", theme: 3, x: 460, y: 200, yaw: -1, pixelSize: 6 },
         { name: "04-kde-3.5", picture: "kde3", theme: 5, x: 720, y: 620, yaw: 1, pixelSize: 6 },
         { name: "05-kde-1.1", picture: "kde1", theme: 2, x: 700, y: 450, yaw: -1, pixelSize: 6 }

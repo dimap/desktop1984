@@ -22,10 +22,10 @@ Window {
     // the last one glides to a halt instead and is held as a still picture.
     readonly property var shots: [
         { picture: "retro", scene: { x0: 130, y0: 110, x1: 250, y1: 110, yaw: -1, rampX: 1, rampY: 0 }, seconds: 8 },
-        { picture: "retro", scene: { x0: 330, y0: 300, x1: 230, y1: 300, yaw: 1, rampX: -1, rampY: 0 }, seconds: 8 },
+        { picture: "retro", scene: { x0: 110, y0: 318, x1: 230, y1: 318, yaw: 1, rampX: 1, rampY: 0 }, seconds: 8 },
         { picture: "kde2", scene: { x0: 440, y0: 185, x1: 550, y1: 185, yaw: -1, rampX: 1, rampY: 0 }, seconds: 8 },
         { picture: "kde3", scene: { x0: 730, y0: 590, x1: 730, y1: 680, yaw: 1, rampX: 0, rampY: 1 }, seconds: 8 },
-        { picture: "retro", scene: { x0: 610, y0: 392, x1: 480, y1: 392, yaw: -1, rampX: -1, rampY: 0 }, seconds: 10.5, stop: true }
+        { picture: "retro", scene: { x0: 100, y0: 150, x1: 230, y1: 150, yaw: -1, rampX: 1, rampY: 0 }, seconds: 10.5, stop: true }
     ]
 
     property int shot: -1

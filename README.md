@@ -26,9 +26,9 @@ the goals, made the design decisions and tested the result on a real desktop.
 
 ## Features
 
-- **Four bundled pictures**: a retro desktop drawn for this wallpaper, and
-  screenshots of KDE 1.1 (1999), KDE 2.2 (2001) and KDE 3.5 (2005) reduced to
-  black and white.
+- **Four bundled pictures**: a retro desktop drawn for this wallpaper in the
+  style of an early X11 workstation, and screenshots of KDE 1.1 (1999),
+  KDE 2.2 (2001) and KDE 3.5 (2005) reduced to black and white.
 - **Your own picture**: any PNG, JPEG, WebP, BMP, GIF or SVG file. It is scaled
   down and converted to black and white on the fly, with brightness, contrast
   and dithering under your control.
@@ -176,7 +176,7 @@ The KDE screenshots were sharpened and reduced to black and white with an
 ordered dither; nothing else was changed. Terminus is used only to draw the
 text of the retro desktop and is not part of the installed wallpaper.
 
-The note in the retro desktop quotes Linus Torvalds.
+The terminal in the retro desktop quotes Linus Torvalds.
 
 The same information travels with the installed package in
 [`package/CREDITS.md`](package/CREDITS.md).
@@ -184,6 +184,8 @@ The same information travels with the installed package in
 ### Trademarks
 
 KDE and the K Desktop Environment logo are trademarks of KDE e.V. Macintosh and
-macOS are trademarks of Apple Inc. This is an independent project: it contains
-no artwork, fonts or code from Apple and is not affiliated with or endorsed by
-Apple Inc. or KDE e.V.
+macOS are trademarks of Apple Inc. Linux is a trademark of Linus Torvalds, and
+X Window System is a trademark of The Open Group. This is an independent
+project: it contains no artwork, fonts or code from Apple, and the retro
+desktop is drawn from scratch rather than taken from the X programs it
+depicts. It is not affiliated with or endorsed by any of these parties.
