@@ -28,8 +28,7 @@ the goals, made the design decisions and tested the result on a real desktop.
   folders of them. They are scaled down and converted to black and white on
   the fly, with brightness, contrast and dithering under your control.
 - **Several pictures at once**: tick any mix of bundled and your own pictures,
-  and every time the pixels appear they show one of them, a different one
-  from the time before.
+  and every time the pixels appear they show one of them.
 - **Still or moving**: by default the picture appears, glides to a halt and
   stays still. It can replay every few minutes, or run continuously like a
   screen saver.
