@@ -30,7 +30,8 @@ Item {
     property real shadowSoftness: 0.6    // 0 is a crisp shadow, 1 fades out over a whole cell
     property real shadowStrength: 0.1
     property real appearSoftness: 0.5    // 0 sweeps the tiles in as a sharp wave, 1 grows them all at once
-    property int theme: 0                // 0 is the drifting spectrum, N pins palette N-1
+    property bool spectrum: true         // drift through all hues instead of keeping color
+    property color color: Palettes.color(0)
     property bool stopAfterIntro: true
     property int replayMinutes: 0        // replay a scene this often once stopped; 0 never
     property bool running: true
@@ -147,7 +148,7 @@ Item {
     function step(frameTime) {
         const dt = Math.min(frameTime, 0.1) * speed
         t += dt
-        if (theme === 0)
+        if (spectrum)
             hue = (hue + dt / huePeriod) % 1
 
         let travelled = t
@@ -238,9 +239,7 @@ Item {
         readonly property real m11: Math.cos(angle) * Math.cos(flight.pitch) * flight.cell
         readonly property real det: m00 * m11 - m01 * m10
 
-        readonly property int palette: Math.min(flight.theme, Palettes.list.length) - 1
-        readonly property real baseHue: palette < 0 ? flight.hue : Palettes.list[palette].hue
-        readonly property real baseSat: palette < 0 ? 0.82 : Palettes.list[palette].sat
+        readonly property color base: flight.spectrum ? Palettes.shade(flight.hue, Palettes.spectrumSat) : flight.color
 
         property var source: world
         property size resolution: Qt.size(width, height)
@@ -262,8 +261,8 @@ Item {
         property real contrast: flight.contrast
         property real dither: flight.dither ? 1 : 0
         property real invert: flight.invert ? 1 : 0
-        property color colorTop: Qt.hsva(baseHue, baseSat * 0.86, baseSat > 0 ? 0.97 : 0.78, 1)
-        property color colorBottom: Qt.hsva(baseHue, baseSat, baseSat > 0 ? 0.95 : 0.66, 1)
+        property color colorTop: Palettes.top(base)
+        property color colorBottom: base
 
         fragmentShader: "../shaders/pixels.frag.qsb"
     }

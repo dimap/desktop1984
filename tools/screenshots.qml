@@ -6,6 +6,7 @@ import QtQuick
 import QtQuick.Window
 
 import "../package/contents/ui"
+import "../package/contents/ui/palettes.js" as Palettes
 
 Window {
     id: window
@@ -19,11 +20,11 @@ Window {
     // x, y is the point of the picture the view comes to rest on. A pixel
     // size smaller than the automatic one fits whole windows into the frame.
     readonly property var shots: [
-        { name: "01-retro-desktop", picture: "retro", theme: 1, x: 160, y: 115, yaw: -1, pixelSize: 6 },
-        { name: "02-retro-xeyes", picture: "retro", theme: 6, x: 175, y: 335, yaw: 1, pixelSize: 6 },
-        { name: "03-kde-2.2", picture: "kde2", theme: 3, x: 460, y: 200, yaw: -1, pixelSize: 6 },
-        { name: "04-kde-3.5", picture: "kde3", theme: 5, x: 720, y: 620, yaw: 1, pixelSize: 6 },
-        { name: "05-kde-1.1", picture: "kde1", theme: 2, x: 700, y: 450, yaw: -1, pixelSize: 6 }
+        { name: "01-retro-desktop", picture: "retro", color: 0, x: 160, y: 115, yaw: -1, pixelSize: 6 },
+        { name: "02-retro-xeyes", picture: "retro", color: 5, x: 175, y: 335, yaw: 1, pixelSize: 6 },
+        { name: "03-kde-2.2", picture: "kde2", color: 2, x: 460, y: 200, yaw: -1, pixelSize: 6 },
+        { name: "04-kde-3.5", picture: "kde3", color: 4, x: 720, y: 620, yaw: 1, pixelSize: 6 },
+        { name: "05-kde-1.1", picture: "kde1", color: 1, x: 700, y: 450, yaw: -1, pixelSize: 6 }
     ]
 
     property int shot: 0
@@ -35,7 +36,8 @@ Window {
         }
         const s = shots[shot]
         flight.pictures = [s.picture]
-        flight.theme = s.theme
+        flight.spectrum = false
+        flight.color = Palettes.color(s.color)
         flight.pixelSize = s.pixelSize
         // A scroll that brakes to a halt exactly on the wanted point.
         const length = 100

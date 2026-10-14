@@ -1,6 +1,7 @@
 import QtQuick
 import org.kde.plasma.plasmoid
 
+import "palettes.js" as Palettes
 import "pictures.js" as Pictures
 
 WallpaperItem {
@@ -24,7 +25,8 @@ WallpaperItem {
         shadowSoftness: root.configuration.ShadowSoftness / 100
         shadowStrength: root.configuration.ShadowStrength / 100
         appearSoftness: root.configuration.AppearSoftness / 100
-        theme: root.configuration.Theme
+        spectrum: Palettes.spectrum(root.configuration.Spectrum, root.configuration.Theme)
+        color: Palettes.fixedColor(root.configuration.Color, root.configuration.Theme)
         stopAfterIntro: root.configuration.StopAfterIntro
         replayMinutes: root.configuration.ReplayMinutes
     }

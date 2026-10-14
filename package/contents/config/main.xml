@@ -42,8 +42,16 @@
       <label>Swap ink and paper</label>
       <default>false</default>
     </entry>
+    <entry name="Spectrum" type="Bool">
+      <label>Drift through all hues instead of keeping Color</label>
+      <default>true</default>
+    </entry>
+    <entry name="Color" type="Color">
+      <label>Background color when Spectrum is off</label>
+      <default>#248cf2</default>
+    </entry>
     <entry name="Theme" type="Int">
-      <label>0 is the drifting spectrum, N pins palette N-1</label>
+      <label>Before 1.3: 0 is the drifting spectrum, N pins palette N-1</label>
       <default>0</default>
     </entry>
     <entry name="StopAfterIntro" type="Bool">

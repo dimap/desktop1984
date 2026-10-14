@@ -4,6 +4,7 @@ import QtQuick.Dialogs
 import QtQuick.Layouts
 import Qt.labs.folderlistmodel
 import org.kde.kcmutils as KCM
+import org.kde.kquickcontrols as KQuickControls
 import org.kde.kirigami as Kirigami
 
 import "palettes.js" as Palettes
@@ -24,7 +25,9 @@ ColumnLayout {
     property alias cfg_Contrast: contrast.value
     property alias cfg_Dither: dither.checked
     property alias cfg_Invert: invert.checked
-    property alias cfg_Theme: theme.currentIndex
+    property bool cfg_Spectrum
+    property color cfg_Color
+    property int cfg_Theme
     property alias cfg_StopAfterIntro: stopAfterIntro.checked
     property alias cfg_ReplayMinutes: replayMinutes.value
     property alias cfg_PixelSize: pixelSize.value
@@ -45,6 +48,8 @@ ColumnLayout {
     property int cfg_ContrastDefault
     property bool cfg_DitherDefault
     property bool cfg_InvertDefault
+    property bool cfg_SpectrumDefault
+    property color cfg_ColorDefault
     property int cfg_ThemeDefault
     property bool cfg_StopAfterIntroDefault
     property int cfg_ReplayMinutesDefault
@@ -60,6 +65,16 @@ ColumnLayout {
     readonly property var unchecked: Pictures.uncheckedPictures(cfg_UncheckedPictures ?? [], cfg_Picture, cfg_CustomImage)
     readonly property var addedFolders: added.filter(Pictures.isFolder)
     readonly property bool isCustom: added.length > 0
+
+    readonly property bool spectrum: Palettes.spectrum(cfg_Spectrum, cfg_Theme)
+    readonly property color fixedColor: Palettes.fixedColor(cfg_Color, cfg_Theme)
+
+    // Writes the color in the current format, which retires the old Theme.
+    function setColor(spectrum, color) {
+        cfg_Spectrum = spectrum
+        cfg_Color = color
+        cfg_Theme = 0
+    }
 
     // Every picture that can be ticked: the bundled ones, the added files and
     // the images in the added folders.
@@ -145,10 +160,77 @@ ColumnLayout {
                 twinFormLayouts.push(appearanceRoot.parentLayout)
         }
 
-        QQC2.ComboBox {
-            id: theme
+        RowLayout {
             Kirigami.FormData.label: "Color:"
-            model: ["Spectrum"].concat(Palettes.list.map(p => p.name))
+
+            // Not auto-exclusive: each follows the setting, which a reset can
+            // change too.
+            QQC2.RadioButton {
+                text: "Spectrum"
+                autoExclusive: false
+                checked: page.spectrum
+                onToggled: {
+                    page.setColor(true, page.fixedColor)
+                    checked = Qt.binding(() => page.spectrum)
+                }
+            }
+            QQC2.RadioButton {
+                text: "Solid color"
+                autoExclusive: false
+                checked: !page.spectrum
+                onToggled: {
+                    page.setColor(false, page.fixedColor)
+                    checked = Qt.binding(() => !page.spectrum)
+                }
+            }
+            KQuickControls.ColorButton {
+                color: page.fixedColor
+                showAlphaChannel: false
+                dialogTitle: "Background Color"
+                onAccepted: color => page.setColor(false, color)
+            }
+            ResetButton {
+                changed: page.spectrum !== page.cfg_SpectrumDefault
+                    || !page.spectrum && !Qt.colorEqual(page.fixedColor, page.cfg_ColorDefault)
+                onClicked: page.setColor(page.cfg_SpectrumDefault, page.cfg_ColorDefault)
+            }
+        }
+
+        // The ready-made colors, one click away from the picker.
+        RowLayout {
+            spacing: Kirigami.Units.smallSpacing
+
+            Repeater {
+                model: Palettes.list
+
+                delegate: QQC2.ToolButton {
+                    id: swatch
+                    required property var modelData
+                    required property int index
+                    readonly property color color: Palettes.color(index)
+                    readonly property bool current: !page.spectrum && Qt.colorEqual(page.fixedColor, color)
+
+                    implicitWidth: Kirigami.Units.gridUnit * 1.5
+                    implicitHeight: implicitWidth
+                    text: modelData.name
+                    display: QQC2.AbstractButton.IconOnly
+                    checkable: false
+                    onClicked: page.setColor(false, color)
+
+                    contentItem: Item {}
+                    background: Rectangle {
+                        radius: width / 2
+                        color: swatch.color
+                        border.width: swatch.current ? 2 : 1
+                        border.color: swatch.current || swatch.hovered
+                            ? Kirigami.Theme.highlightColor : Qt.darker(swatch.color, 1.3)
+                    }
+
+                    QQC2.ToolTip.text: text
+                    QQC2.ToolTip.visible: hovered
+                    QQC2.ToolTip.delay: Kirigami.Units.toolTipDelay
+                }
+            }
         }
 
         QQC2.CheckBox {
@@ -162,14 +244,21 @@ ColumnLayout {
             text: "Come to rest after appearing"
         }
 
-        QQC2.SpinBox {
-            id: replayMinutes
+        RowLayout {
             Kirigami.FormData.label: "Replay every:"
             enabled: stopAfterIntro.checked
-            from: 0
-            to: 720
-            textFromValue: value => value === 0 ? "never" : value + " min"
-            valueFromText: text => parseInt(text) || 0
+
+            QQC2.SpinBox {
+                id: replayMinutes
+                from: 0
+                to: 720
+                textFromValue: value => value === 0 ? "never" : value + " min"
+                valueFromText: text => parseInt(text) || 0
+            }
+            ResetButton {
+                changed: replayMinutes.value !== page.cfg_ReplayMinutesDefault
+                onClicked: replayMinutes.value = page.cfg_ReplayMinutesDefault
+            }
         }
 
         RowLayout {
@@ -187,31 +276,56 @@ ColumnLayout {
             QQC2.Label {
                 text: "all at once"
             }
+            ResetButton {
+                changed: appearSoftness.value !== page.cfg_AppearSoftnessDefault
+                onClicked: appearSoftness.value = page.cfg_AppearSoftnessDefault
+            }
         }
 
-        QQC2.SpinBox {
-            id: pixelSize
+        RowLayout {
             Kirigami.FormData.label: "Pixel size:"
-            from: 0
-            to: 96
-            textFromValue: value => value === 0 ? "auto" : value + " px"
-            valueFromText: text => parseInt(text) || 0
+
+            QQC2.SpinBox {
+                id: pixelSize
+                from: 0
+                to: 96
+                textFromValue: value => value === 0 ? "auto" : value + " px"
+                valueFromText: text => parseInt(text) || 0
+            }
+            ResetButton {
+                changed: pixelSize.value !== page.cfg_PixelSizeDefault
+                onClicked: pixelSize.value = page.cfg_PixelSizeDefault
+            }
         }
 
-        QQC2.Slider {
-            id: speed
+        RowLayout {
             Kirigami.FormData.label: "Speed:"
-            from: 10
-            to: 300
-            stepSize: 10
+
+            QQC2.Slider {
+                id: speed
+                from: 10
+                to: 300
+                stepSize: 10
+            }
+            ResetButton {
+                changed: speed.value !== page.cfg_SpeedDefault
+                onClicked: speed.value = page.cfg_SpeedDefault
+            }
         }
 
-        QQC2.Slider {
-            id: gap
+        RowLayout {
             Kirigami.FormData.label: "Gap between pixels:"
-            from: 0
-            to: 30
-            stepSize: 1
+
+            QQC2.Slider {
+                id: gap
+                from: 0
+                to: 30
+                stepSize: 1
+            }
+            ResetButton {
+                changed: gap.value !== page.cfg_GapDefault
+                onClicked: gap.value = page.cfg_GapDefault
+            }
         }
 
         RowLayout {
@@ -225,6 +339,10 @@ ColumnLayout {
             }
             QQC2.Label {
                 text: tileOpacity.value + "%"
+            }
+            ResetButton {
+                changed: tileOpacity.value !== page.cfg_TileOpacityDefault
+                onClicked: tileOpacity.value = page.cfg_TileOpacityDefault
             }
         }
 
@@ -240,6 +358,10 @@ ColumnLayout {
             QQC2.Label {
                 text: shadowSoftness.value + "%"
             }
+            ResetButton {
+                changed: shadowSoftness.value !== page.cfg_ShadowSoftnessDefault
+                onClicked: shadowSoftness.value = page.cfg_ShadowSoftnessDefault
+            }
         }
 
         RowLayout {
@@ -253,6 +375,10 @@ ColumnLayout {
             }
             QQC2.Label {
                 text: shadowStrength.value + "%"
+            }
+            ResetButton {
+                changed: shadowStrength.value !== page.cfg_ShadowStrengthDefault
+                onClicked: shadowStrength.value = page.cfg_ShadowStrengthDefault
             }
         }
 
@@ -273,31 +399,52 @@ ColumnLayout {
             text: "How your own pictures are turned into black and white pixels. The bundled ones are not affected."
         }
 
-        QQC2.SpinBox {
-            id: imageWidth
+        RowLayout {
             Kirigami.FormData.label: "Width in pixels:"
             visible: page.isCustom
-            from: 32
-            to: 2048
-            stepSize: 16
+
+            QQC2.SpinBox {
+                id: imageWidth
+                from: 32
+                to: 2048
+                stepSize: 16
+            }
+            ResetButton {
+                changed: imageWidth.value !== page.cfg_ImageWidthDefault
+                onClicked: imageWidth.value = page.cfg_ImageWidthDefault
+            }
         }
 
-        QQC2.Slider {
-            id: brightness
+        RowLayout {
             Kirigami.FormData.label: "Brightness:"
             visible: page.isCustom
-            from: -100
-            to: 100
-            stepSize: 5
+
+            QQC2.Slider {
+                id: brightness
+                from: -100
+                to: 100
+                stepSize: 5
+            }
+            ResetButton {
+                changed: brightness.value !== page.cfg_BrightnessDefault
+                onClicked: brightness.value = page.cfg_BrightnessDefault
+            }
         }
 
-        QQC2.Slider {
-            id: contrast
+        RowLayout {
             Kirigami.FormData.label: "Contrast:"
             visible: page.isCustom
-            from: 100
-            to: 400
-            stepSize: 10
+
+            QQC2.Slider {
+                id: contrast
+                from: 100
+                to: 400
+                stepSize: 10
+            }
+            ResetButton {
+                changed: contrast.value !== page.cfg_ContrastDefault
+                onClicked: contrast.value = page.cfg_ContrastDefault
+            }
         }
 
         QQC2.CheckBox {

@@ -34,7 +34,8 @@ the goals, made the design decisions and tested the result on a real desktop.
   stays still. It can replay every few minutes, or run continuously like a
   screen saver.
 - **Colors**: a spectrum that drifts through every hue while the picture moves,
-  or one of seven fixed colors.
+  or any solid color from a color picker, with seven ready-made ones a click
+  away.
 - **Adjustable look**: pixel size, gap, pixel opacity, shadow softness and
   strength, speed, and how the pixels appear.
 - **Light on the GPU**: everything is drawn by one fragment shader; once the
@@ -87,6 +88,8 @@ that existing installations keep receiving updates.)
 
 ## Settings
 
+A setting that differs from its default has a reset button next to it.
+
 ### Picture
 
 | Setting | What it does |
@@ -112,7 +115,7 @@ Only dark pixels become tiles, so a picture with a light background works best.
 
 | Setting | What it does |
 |---|---|
-| **Color** | **Spectrum** drifts through all hues; the others are fixed |
+| **Color** | **Spectrum** drifts through all hues; **Solid color** keeps the one picked in the color dialog or from the ready-made swatches below |
 | **Come to rest after appearing** | On: the picture appears, slows down and stays still. Off: scene follows scene without end |
 | **Replay every** | When resting, sweep the picture away and show another scene this often |
 | **Appearing** | From a wave that crosses the screen to all pixels growing at once |
