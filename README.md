@@ -24,9 +24,12 @@ the goals, made the design decisions and tested the result on a real desktop.
 - **Four bundled pictures**: a retro desktop drawn for this wallpaper in the
   style of an early X11 workstation, and screenshots of KDE 1.1 (1999),
   KDE 2.2 (2001) and KDE 3.5 (2005) reduced to black and white.
-- **Your own picture**: any PNG, JPEG, WebP, BMP, GIF or SVG file. It is scaled
-  down and converted to black and white on the fly, with brightness, contrast
-  and dithering under your control.
+- **Your own pictures**: any PNG, JPEG, WebP, BMP, GIF or SVG files, or whole
+  folders of them. They are scaled down and converted to black and white on
+  the fly, with brightness, contrast and dithering under your control.
+- **Several pictures at once**: tick any mix of bundled and your own pictures,
+  and every time the pixels appear they show one of them, a different one
+  from the time before.
 - **Still or moving**: by default the picture appears, glides to a halt and
   stays still. It can replay every few minutes, or run continuously like a
   screen saver.
@@ -88,10 +91,9 @@ that existing installations keep receiving updates.)
 
 | Setting | What it does |
 |---|---|
-| **Picture** | One of the bundled pictures, or **Custom file…** |
-| **File** | The image to use as a custom picture |
-| **Width in pixels** | How many pixels across the custom picture is reduced to; fewer means chunkier |
-| **Brightness**, **Contrast** | Tune the conversion of a custom picture to black and white |
+| **Pictures** | Tick the pictures to show; each scene picks one of them. **Add Files…** and **Add Folder…** add your own; a folder stands for every image in it |
+| **Width in pixels** | How many pixels across your own pictures are reduced to; fewer means chunkier |
+| **Brightness**, **Contrast** | Tune the conversion of your own pictures to black and white |
 | **Dither mid-tones** | Render greys as patterns of dots; off gives plain black and white |
 | **Swap black and white** | Invert the picture; works for the bundled ones too |
 

@@ -1,13 +1,15 @@
 import QtQuick
 import org.kde.plasma.plasmoid
 
+import "pictures.js" as Pictures
+
 WallpaperItem {
     id: root
 
     PixelFlight {
         anchors.fill: parent
-        picture: root.configuration.Picture
-        customImage: root.configuration.CustomImage
+        pictures: Pictures.selection(root.configuration.Pictures,
+            root.configuration.Picture, root.configuration.CustomImage)
         imageWidth: root.configuration.ImageWidth
         brightness: root.configuration.Brightness / 100
         contrast: root.configuration.Contrast / 100

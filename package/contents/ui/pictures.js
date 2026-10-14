@@ -3,7 +3,13 @@
 
 // Bundled bitmaps. A picture without its own scenes gets random camera moves;
 // tile says the bitmap may repeat past its edges instead of ending there.
-var custom = "custom"
+//
+// A picture is named by the id of a bundled one, by the URL of an image file,
+// or by the URL of a folder, which always ends in "/" and stands for every
+// image in it.
+var custom = "custom"   // the only custom picture in settings before 1.3
+
+var nameFilters = ["*.png", "*.jpg", "*.jpeg", "*.webp", "*.bmp", "*.gif", "*.svg"]
 
 var list = [
     { id: "retro", name: "Retro desktop", file: "world.png", tile: true, scenes: Scene.scenes },
@@ -33,12 +39,42 @@ var list = [
     ] }
 ]
 
-function find(id) {
+function byId(id) {
     for (let i = 0; i < list.length; ++i) {
         if (list[i].id === id)
             return list[i]
     }
-    return list[0]
+    return null
+}
+
+function find(id) {
+    return byId(id) ?? list[0]
+}
+
+function isFolder(picture) {
+    return picture.endsWith("/")
+}
+
+// The name of a file or folder from its URL.
+function fileName(url) {
+    return decodeURIComponent(url.replace(/\/$/, "").split("/").pop())
+}
+
+// The pictures to choose from. Settings before 1.3 held a single picture, and
+// they still say what to show until the list has been saved once.
+function selection(pictures, legacyPicture, legacyImage) {
+    if (pictures.length > 0)
+        return Array.from(pictures)
+    if (legacyPicture === custom && legacyImage)
+        return [legacyImage]
+    return [find(legacyPicture).id]
+}
+
+// Files and folders added in the settings, chosen or not.
+function addedImages(images, legacyImage) {
+    if (images.length > 0)
+        return Array.from(images)
+    return legacyImage ? [legacyImage] : []
 }
 
 // Straight scrolls along a random row or column, kept away from the edges.

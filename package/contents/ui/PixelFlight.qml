@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Window
+import Qt.labs.folderlistmodel
 
 import "palettes.js" as Palettes
 import "pictures.js" as Pictures
@@ -9,12 +10,12 @@ import "pictures.js" as Pictures
 // It plays scenes one after another. A scene starts on an empty background,
 // the tiles sweep in, the view scrolls along the bitmap, and the tiles sweep
 // out again. With stopAfterIntro the first scene instead glides to a halt and
-// stays on screen as a still wallpaper.
+// stays on screen as a still wallpaper. Each scene shows one of the pictures,
+// a different one from the scene before whenever there is a choice.
 Item {
     id: flight
 
-    property string picture: "retro"     // id from pictures.js, or "custom"
-    property url customImage             // used when picture is "custom"
+    property var pictures: ["retro"]     // bundled ids, image URLs and folder URLs, see pictures.js
     property int imageWidth: 480         // cells a custom image is scaled to across
     property real brightness: 0          // -1..1, shifts the mid-tones of the picture
     property real contrast: 1
@@ -43,10 +44,12 @@ Item {
     readonly property real pitch: Math.PI / 4
     readonly property real yaw: Math.PI / 8
 
-    // A custom image that is missing or unreadable falls back to the first bundled picture.
-    property bool customFailed: false
-    readonly property bool useCustom: picture === Pictures.custom && customImage.toString() !== "" && !customFailed
-    readonly property var bundled: Pictures.find(picture)
+    // The pictures with folders opened up. Images that are missing or
+    // unreadable drop out, and with none left the first bundled one is shown.
+    property var pool: []
+    property var broken: []
+    property string picture               // the one on screen, from the pool
+    readonly property var bundled: Pictures.byId(picture)
 
     property var scenes: []
     property int sceneIndex: 0
@@ -80,8 +83,56 @@ Item {
     }
 
     function nextScene() {
+        const next = pickPicture()
+        if (next !== picture) {
+            show(next)
+            return
+        }
         const count = scenes.length
         startScene((sceneIndex + 1 + Math.floor(Math.random() * (count - 1))) % count)
+    }
+
+    function pickPicture() {
+        const others = pool.filter(p => p !== picture)
+        if (others.length === 0)
+            return pool.length > 0 ? pool[0] : picture
+        return others[Math.floor(Math.random() * others.length)]
+    }
+
+    // The image starts the first scene once it has loaded.
+    function show(next) {
+        picture = next
+        world.source = ""
+        world.asynchronous = !bundled
+        world.sourceSize.width = bundled ? 0 : imageWidth
+        world.source = bundled ? Qt.resolvedUrl("../images/" + bundled.file) : picture
+    }
+
+    function folderModel(url) {
+        for (let i = 0; i < folders.count; ++i) {
+            if (folders.objectAt(i)?.modelData === url)
+                return folders.objectAt(i)
+        }
+        return null
+    }
+
+    function updatePool() {
+        const found = pictures.filter(p => !Pictures.isFolder(p))
+        let listing = false
+        for (const url of pictures.filter(Pictures.isFolder)) {
+            const folder = folderModel(url)
+            if (folder?.status !== FolderListModel.Ready) {
+                listing = true
+                continue
+            }
+            for (let j = 0; j < folder.count; ++j)
+                found.push(folder.get(j, "fileUrl").toString())
+        }
+        pool = found.filter(p => !broken.includes(p))
+        if (pool.length === 0 && !listing)
+            pool = [Pictures.list[0].id]
+        if (pool.length > 0 && !pool.includes(picture))
+            show(pickPicture())
     }
 
     // Sweeps the still picture away and plays another scene.
@@ -117,10 +168,30 @@ Item {
     }
 
     onStopAfterIntroChanged: if (!stopAfterIntro) replay()
-    onCustomImageChanged: customFailed = false
+    onPicturesChanged: {
+        broken = []
+        updatePool()
+    }
+    onImageWidthChanged: if (picture !== "" && !bundled) show(picture)
+    Component.onCompleted: updatePool()
+
+    Instantiator {
+        id: folders
+        model: flight.pictures.filter(Pictures.isFolder)
+        delegate: FolderListModel {
+            required property string modelData
+            folder: modelData
+            nameFilters: Pictures.nameFilters
+            caseSensitive: false
+            showDirs: false
+            onStatusChanged: Qt.callLater(flight.updatePool)
+            onCountChanged: Qt.callLater(flight.updatePool)
+        }
+    }
 
     FrameAnimation {
         running: flight.running && flight.visible && !flight.frozen && flight.scenes.length > 0
+            && world.status === Image.Ready
         onTriggered: flight.step(frameTime)
     }
 
@@ -131,21 +202,21 @@ Item {
         onTriggered: flight.replay()
     }
 
+    // Set up by show(). Scaling a custom image down as it loads is what turns
+    // it into "pixels".
     Image {
         id: world
-        source: flight.useCustom ? flight.customImage : "../images/" + flight.bundled.file
-        // Scaling a custom image down here is what turns it into "pixels".
-        sourceSize.width: flight.useCustom ? flight.imageWidth : 0
         smooth: false
         visible: false
 
         // Every new picture starts over from an empty background.
         onStatusChanged: {
-            if (status === Image.Error && flight.useCustom) {
-                flight.customFailed = true
+            if (status === Image.Error) {
+                flight.broken = flight.broken.concat([flight.picture])
+                flight.updatePool()
             } else if (status === Image.Ready) {
-                flight.scenes = (!flight.useCustom && flight.bundled.scenes)
-                    || Pictures.randomScenes(implicitWidth, implicitHeight)
+                flight.scenes = flight.bundled?.scenes
+                    ?? Pictures.randomScenes(implicitWidth, implicitHeight)
                 flight.startScene(Math.floor(Math.random() * flight.scenes.length))
             }
         }
@@ -184,7 +255,7 @@ Item {
         property real tileOpacity: flight.tileOpacity
         property real shadowBlur: Math.max(0.03, Math.min(1, flight.shadowSoftness))
         property real shadowDepth: flight.shadowStrength
-        property real wrap: !flight.useCustom && flight.bundled.tile ? 1 : 0
+        property real wrap: flight.bundled?.tile ? 1 : 0
         property real gamma: Math.pow(2, -1.5 * flight.brightness)
         property real contrast: flight.contrast
         property real dither: flight.dither ? 1 : 0

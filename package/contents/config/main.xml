@@ -6,12 +6,20 @@
   <kcfgfile name=""/>
 
   <group name="General">
+    <entry name="Pictures" type="StringList">
+      <label>Pictures to pick from for each scene: bundled ids, image URLs and folder URLs ending in a slash; empty falls back to Picture</label>
+      <default></default>
+    </entry>
+    <entry name="AddedImages" type="StringList">
+      <label>Image and folder URLs added in the settings, chosen or not</label>
+      <default></default>
+    </entry>
     <entry name="Picture" type="String">
-      <label>Id of a bundled picture, or "custom"</label>
+      <label>Before 1.3: id of a bundled picture, or "custom"</label>
       <default>retro</default>
     </entry>
     <entry name="CustomImage" type="String">
-      <label>URL of the image used when Picture is "custom"</label>
+      <label>Before 1.3: URL of the image used when Picture is "custom"</label>
       <default></default>
     </entry>
     <entry name="ImageWidth" type="Int">

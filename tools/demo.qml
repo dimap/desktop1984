@@ -34,7 +34,7 @@ Window {
 
     function startShot() {
         const s = shots[++shot]
-        flight.picture = s.picture
+        flight.pictures = [s.picture]
         flight.stopAfterIntro = !!s.stop
         flight.scenes = [s.scene]
         flight.startScene(0)

@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls as QQC2
 import QtQuick.Dialogs
 import QtQuick.Layouts
+import Qt.labs.folderlistmodel
 import org.kde.kirigami as Kirigami
 
 import "palettes.js" as Palettes
@@ -10,6 +11,8 @@ import "pictures.js" as Pictures
 Kirigami.FormLayout {
     id: page
 
+    property var cfg_Pictures
+    property var cfg_AddedImages
     property string cfg_Picture
     property string cfg_CustomImage
     property alias cfg_ImageWidth: imageWidth.value
@@ -29,6 +32,8 @@ Kirigami.FormLayout {
     property alias cfg_ShadowStrength: shadowStrength.value
 
     // Plasma also hands every config page the defaults.
+    property var cfg_PicturesDefault
+    property var cfg_AddedImagesDefault
     property string cfg_PictureDefault
     property string cfg_CustomImageDefault
     property int cfg_ImageWidthDefault
@@ -47,34 +52,131 @@ Kirigami.FormLayout {
     property int cfg_ShadowSoftnessDefault
     property int cfg_ShadowStrengthDefault
 
-    readonly property bool isCustom: cfg_Picture === Pictures.custom
+    readonly property var selection: Pictures.selection(cfg_Pictures ?? [], cfg_Picture, cfg_CustomImage)
+    readonly property var added: Pictures.addedImages(cfg_AddedImages ?? [], cfg_CustomImage)
+    readonly property bool isCustom: selection.some(p => !Pictures.byId(p))
 
-    QQC2.ComboBox {
-        id: picture
-        Kirigami.FormData.label: "Picture:"
-        textRole: "name"
-        valueRole: "id"
-        model: Pictures.list.map(p => ({ id: p.id, name: p.name }))
-            .concat([{ id: Pictures.custom, name: "Custom file…" }])
-        Component.onCompleted: currentIndex = Math.max(0, indexOfValue(page.cfg_Picture))
-        onActivated: page.cfg_Picture = currentValue
+    // Writes both lists in the current format, which retires the old single
+    // picture. Something always stays chosen.
+    function save(selection, added) {
+        cfg_Pictures = selection.length > 0 ? selection : [Pictures.list[0].id]
+        cfg_AddedImages = added
+        cfg_Picture = cfg_PictureDefault
+        cfg_CustomImage = ""
     }
 
-    RowLayout {
-        Kirigami.FormData.label: "File:"
-        visible: page.isCustom
+    function choose(picture, chosen) {
+        save(chosen ? selection.concat([picture]) : selection.filter(p => p !== picture), added)
+    }
 
-        QQC2.Button {
-            text: "Choose…"
-            icon.name: "document-open"
-            onClicked: fileDialog.open()
+    // Whatever is added is chosen too.
+    function add(urls) {
+        const all = Array.from(urls, String)
+        save(selection.concat(all.filter(url => !selection.includes(url))),
+            added.concat(all.filter(url => !added.includes(url))))
+    }
+
+    function remove(url) {
+        save(selection.filter(p => p !== url), added.filter(p => p !== url))
+    }
+
+    ColumnLayout {
+        Kirigami.FormData.label: "Pictures:"
+        Kirigami.FormData.labelAlignment: Qt.AlignTop
+        Layout.maximumWidth: Kirigami.Units.gridUnit * 20
+
+        Repeater {
+            model: Pictures.list.map(p => p.id).concat(page.added)
+
+            delegate: RowLayout {
+                id: row
+                required property string modelData
+                readonly property var bundled: Pictures.byId(modelData)
+                readonly property bool isFolder: Pictures.isFolder(modelData)
+                readonly property bool chosen: page.selection.includes(modelData)
+
+                // Counts the pictures in a folder.
+                Instantiator {
+                    id: folder
+                    model: row.isFolder ? [row.modelData] : []
+                    delegate: FolderListModel {
+                        required property string modelData
+                        folder: modelData
+                        nameFilters: Pictures.nameFilters
+                        caseSensitive: false
+                        showDirs: false
+                    }
+                }
+
+                QQC2.CheckBox {
+                    checked: row.chosen
+                    // The last chosen picture cannot be unchosen.
+                    enabled: !row.chosen || page.selection.length > 1
+                    onToggled: {
+                        page.choose(row.modelData, checked)
+                        checked = Qt.binding(() => row.chosen)
+                    }
+                }
+                Rectangle {
+                    implicitWidth: Kirigami.Units.gridUnit * 3
+                    implicitHeight: Kirigami.Units.gridUnit * 2
+                    color: row.isFolder ? "transparent" : "white"
+                    border.color: row.isFolder ? "transparent" : Kirigami.Theme.disabledTextColor
+                    clip: true
+
+                    Image {
+                        anchors.fill: parent
+                        anchors.margins: 1
+                        visible: !row.isFolder
+                        source: row.bundled ? "../images/" + row.bundled.file : row.isFolder ? "" : row.modelData
+                        sourceSize: Qt.size(width * 2, height * 2)
+                        fillMode: Image.PreserveAspectCrop
+                        asynchronous: true
+                    }
+                    Kirigami.Icon {
+                        anchors.centerIn: parent
+                        width: Kirigami.Units.iconSizes.medium
+                        height: width
+                        visible: row.isFolder
+                        source: "folder"
+                    }
+                }
+                QQC2.Label {
+                    Layout.fillWidth: true
+                    elide: Text.ElideMiddle
+                    text: row.bundled ? row.bundled.name
+                        : row.isFolder ? Pictures.fileName(row.modelData) + " (" + (folder.object?.count ?? 0) + ")"
+                        : Pictures.fileName(row.modelData)
+                    QQC2.ToolTip.text: row.bundled ? "" : decodeURIComponent(row.modelData.replace(/^file:\/\//, ""))
+                    QQC2.ToolTip.visible: !row.bundled && hover.hovered
+                    QQC2.ToolTip.delay: Kirigami.Units.toolTipDelay
+
+                    HoverHandler {
+                        id: hover
+                    }
+                }
+                QQC2.ToolButton {
+                    visible: !row.bundled
+                    icon.name: "list-remove"
+                    QQC2.ToolTip.text: "Remove from the list"
+                    QQC2.ToolTip.visible: hovered
+                    QQC2.ToolTip.delay: Kirigami.Units.toolTipDelay
+                    onClicked: page.remove(row.modelData)
+                }
+            }
         }
-        QQC2.Label {
-            Layout.maximumWidth: Kirigami.Units.gridUnit * 14
-            elide: Text.ElideMiddle
-            text: page.cfg_CustomImage
-                ? decodeURIComponent(page.cfg_CustomImage.split("/").pop())
-                : "none chosen"
+
+        RowLayout {
+            QQC2.Button {
+                text: "Add Files…"
+                icon.name: "list-add"
+                onClicked: fileDialog.open()
+            }
+            QQC2.Button {
+                text: "Add Folder…"
+                icon.name: "folder-new"
+                onClicked: folderDialog.open()
+            }
         }
     }
 
@@ -228,8 +330,15 @@ Kirigami.FormLayout {
 
     FileDialog {
         id: fileDialog
-        title: "Choose a picture"
-        nameFilters: ["Images (*.png *.jpg *.jpeg *.webp *.bmp *.gif *.svg)", "All files (*)"]
-        onAccepted: page.cfg_CustomImage = selectedFile
+        title: "Add pictures"
+        fileMode: FileDialog.OpenFiles
+        nameFilters: ["Images (" + Pictures.nameFilters.join(" ") + ")", "All files (*)"]
+        onAccepted: page.add(selectedFiles)
+    }
+
+    FolderDialog {
+        id: folderDialog
+        title: "Add a folder of pictures"
+        onAccepted: page.add([selectedFolder.toString().replace(/\/?$/, "/")])
     }
 }

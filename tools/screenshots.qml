@@ -34,7 +34,7 @@ Window {
             return
         }
         const s = shots[shot]
-        flight.picture = s.picture
+        flight.pictures = [s.picture]
         flight.theme = s.theme
         flight.pixelSize = s.pixelSize
         // A scroll that brakes to a halt exactly on the wanted point.
