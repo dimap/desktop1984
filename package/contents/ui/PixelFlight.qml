@@ -16,6 +16,7 @@ Item {
     id: flight
 
     property var pictures: ["retro"]     // bundled ids, image URLs and folder URLs, see pictures.js
+    property var excluded: []            // pictures not to show, folders' images among them
     property int imageWidth: 480         // cells a custom image is scaled to across
     property real brightness: 0          // -1..1, shifts the mid-tones of the picture
     property real contrast: 1
@@ -128,7 +129,7 @@ Item {
             for (let j = 0; j < folder.count; ++j)
                 found.push(folder.get(j, "fileUrl").toString())
         }
-        pool = found.filter(p => !broken.includes(p))
+        pool = found.filter(p => !excluded.includes(p) && !broken.includes(p))
         if (pool.length === 0 && !listing)
             pool = [Pictures.list[0].id]
         if (pool.length > 0 && !pool.includes(picture))
@@ -172,6 +173,7 @@ Item {
         broken = []
         updatePool()
     }
+    onExcludedChanged: updatePool()
     onImageWidthChanged: if (picture !== "" && !bundled) show(picture)
     Component.onCompleted: updatePool()
 

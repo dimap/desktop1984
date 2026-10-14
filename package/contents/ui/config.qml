@@ -3,16 +3,20 @@ import QtQuick.Controls as QQC2
 import QtQuick.Dialogs
 import QtQuick.Layouts
 import Qt.labs.folderlistmodel
+import org.kde.kcmutils as KCM
 import org.kde.kirigami as Kirigami
 
 import "palettes.js" as Palettes
 import "pictures.js" as Pictures
 
-Kirigami.FormLayout {
+// The settings, and under them the pictures to show laid out like the
+// slideshow wallpaper's: added folders on the left, every picture as a
+// thumbnail to tick on the right.
+ColumnLayout {
     id: page
 
-    property var cfg_Pictures
     property var cfg_AddedImages
+    property var cfg_UncheckedPictures
     property string cfg_Picture
     property string cfg_CustomImage
     property alias cfg_ImageWidth: imageWidth.value
@@ -32,8 +36,8 @@ Kirigami.FormLayout {
     property alias cfg_ShadowStrength: shadowStrength.value
 
     // Plasma also hands every config page the defaults.
-    property var cfg_PicturesDefault
     property var cfg_AddedImagesDefault
+    property var cfg_UncheckedPicturesDefault
     property string cfg_PictureDefault
     property string cfg_CustomImageDefault
     property int cfg_ImageWidthDefault
@@ -52,279 +56,449 @@ Kirigami.FormLayout {
     property int cfg_ShadowSoftnessDefault
     property int cfg_ShadowStrengthDefault
 
-    readonly property var selection: Pictures.selection(cfg_Pictures ?? [], cfg_Picture, cfg_CustomImage)
     readonly property var added: Pictures.addedImages(cfg_AddedImages ?? [], cfg_CustomImage)
-    readonly property bool isCustom: selection.some(p => !Pictures.byId(p))
+    readonly property var unchecked: Pictures.uncheckedPictures(cfg_UncheckedPictures ?? [], cfg_Picture, cfg_CustomImage)
+    readonly property var addedFolders: added.filter(Pictures.isFolder)
+    readonly property bool isCustom: added.length > 0
 
-    // Writes both lists in the current format, which retires the old single
-    // picture. Something always stays chosen.
-    function save(selection, added) {
-        cfg_Pictures = selection.length > 0 ? selection : [Pictures.list[0].id]
+    // Every picture that can be ticked: the bundled ones, the added files and
+    // the images in the added folders.
+    property var thumbnails: []
+
+    function updateThumbnails() {
+        const all = Pictures.list.map(p => ({ id: p.id, name: p.name, subtitle: "Bundled",
+                                             source: Qt.resolvedUrl("../images/" + p.file), removable: false }))
+        const seen = new Set(all.map(p => p.id))
+        const push = (url, removable) => {
+            if (seen.has(url))
+                return
+            seen.add(url)
+            all.push({ id: url, name: Pictures.fileName(url), subtitle: Pictures.fileName(url.replace(/[^/]*$/, "")),
+                       source: url, removable: removable })
+        }
+        added.filter(p => !Pictures.isFolder(p)).forEach(url => push(url, true))
+        for (let i = 0; i < folderModels.count; ++i) {
+            const folder = folderModels.objectAt(i)
+            for (let j = 0; folder && j < folder.count; ++j)
+                push(folder.get(j, "fileUrl").toString(), false)
+        }
+        thumbnails = all
+    }
+
+    // Writes the lists in the current format, which retires the old single
+    // picture.
+    function save(added, unchecked) {
         cfg_AddedImages = added
+        cfg_UncheckedPictures = unchecked
         cfg_Picture = cfg_PictureDefault
         cfg_CustomImage = ""
     }
 
-    function choose(picture, chosen) {
-        save(chosen ? selection.concat([picture]) : selection.filter(p => p !== picture), added)
+    function check(picture, checked) {
+        save(added, checked ? unchecked.filter(p => p !== picture) : unchecked.concat([picture]))
     }
 
-    // Whatever is added is chosen too.
+    function checkAll(checked) {
+        save(added, checked ? [] : thumbnails.map(p => p.id))
+    }
+
+    // Whatever is added is ticked.
     function add(urls) {
         const all = Array.from(urls, String)
-        save(selection.concat(all.filter(url => !selection.includes(url))),
-            added.concat(all.filter(url => !added.includes(url))))
+        save(added.concat(all.filter(url => !added.includes(url))), unchecked.filter(p => !all.includes(p)))
     }
 
     function remove(url) {
-        save(selection.filter(p => p !== url), added.filter(p => p !== url))
+        save(added.filter(p => p !== url), unchecked.filter(p => p !== url))
     }
 
-    ColumnLayout {
-        Kirigami.FormData.label: "Pictures:"
-        Kirigami.FormData.labelAlignment: Qt.AlignTop
-        Layout.maximumWidth: Kirigami.Units.gridUnit * 20
+    onAddedChanged: Qt.callLater(updateThumbnails)
+    Component.onCompleted: updateThumbnails()
 
-        Repeater {
-            model: Pictures.list.map(p => p.id).concat(page.added)
+    Instantiator {
+        id: folderModels
+        model: page.addedFolders
+        delegate: FolderListModel {
+            required property string modelData
+            folder: modelData
+            nameFilters: Pictures.nameFilters
+            caseSensitive: false
+            showDirs: false
+            sortField: FolderListModel.Name
+            onCountChanged: Qt.callLater(page.updateThumbnails)
+        }
+        onObjectRemoved: Qt.callLater(page.updateThumbnails)
+    }
 
-            delegate: RowLayout {
-                id: row
-                required property string modelData
-                readonly property var bundled: Pictures.byId(modelData)
-                readonly property bool isFolder: Pictures.isFolder(modelData)
-                readonly property bool chosen: page.selection.includes(modelData)
+    spacing: 0
 
-                // Counts the pictures in a folder.
-                Instantiator {
-                    id: folder
-                    model: row.isFolder ? [row.modelData] : []
-                    delegate: FolderListModel {
-                        required property string modelData
-                        folder: modelData
-                        nameFilters: Pictures.nameFilters
-                        caseSensitive: false
-                        showDirs: false
-                    }
-                }
+    Kirigami.FormLayout {
+        id: form
+        Layout.bottomMargin: Kirigami.Units.largeSpacing
 
-                QQC2.CheckBox {
-                    checked: row.chosen
-                    // The last chosen picture cannot be unchosen.
-                    enabled: !row.chosen || page.selection.length > 1
-                    onToggled: {
-                        page.choose(row.modelData, checked)
-                        checked = Qt.binding(() => row.chosen)
-                    }
-                }
-                Rectangle {
-                    implicitWidth: Kirigami.Units.gridUnit * 3
-                    implicitHeight: Kirigami.Units.gridUnit * 2
-                    color: row.isFolder ? "transparent" : "white"
-                    border.color: row.isFolder ? "transparent" : Kirigami.Theme.disabledTextColor
-                    clip: true
+        // Lines the labels up with the "Wallpaper type" row above.
+        Component.onCompleted: {
+            if (typeof appearanceRoot !== "undefined")
+                twinFormLayouts.push(appearanceRoot.parentLayout)
+        }
 
-                    Image {
-                        anchors.fill: parent
-                        anchors.margins: 1
-                        visible: !row.isFolder
-                        source: row.bundled ? "../images/" + row.bundled.file : row.isFolder ? "" : row.modelData
-                        sourceSize: Qt.size(width * 2, height * 2)
-                        fillMode: Image.PreserveAspectCrop
-                        asynchronous: true
-                    }
-                    Kirigami.Icon {
-                        anchors.centerIn: parent
-                        width: Kirigami.Units.iconSizes.medium
-                        height: width
-                        visible: row.isFolder
-                        source: "folder"
-                    }
-                }
-                QQC2.Label {
-                    Layout.fillWidth: true
-                    elide: Text.ElideMiddle
-                    text: row.bundled ? row.bundled.name
-                        : row.isFolder ? Pictures.fileName(row.modelData) + " (" + (folder.object?.count ?? 0) + ")"
-                        : Pictures.fileName(row.modelData)
-                    QQC2.ToolTip.text: row.bundled ? "" : decodeURIComponent(row.modelData.replace(/^file:\/\//, ""))
-                    QQC2.ToolTip.visible: !row.bundled && hover.hovered
-                    QQC2.ToolTip.delay: Kirigami.Units.toolTipDelay
+        QQC2.SpinBox {
+            id: imageWidth
+            Kirigami.FormData.label: "Width in pixels:"
+            visible: page.isCustom
+            from: 32
+            to: 2048
+            stepSize: 16
+        }
 
-                    HoverHandler {
-                        id: hover
-                    }
-                }
-                QQC2.ToolButton {
-                    visible: !row.bundled
-                    icon.name: "list-remove"
-                    QQC2.ToolTip.text: "Remove from the list"
-                    QQC2.ToolTip.visible: hovered
-                    QQC2.ToolTip.delay: Kirigami.Units.toolTipDelay
-                    onClicked: page.remove(row.modelData)
-                }
+        QQC2.Slider {
+            id: brightness
+            Kirigami.FormData.label: "Brightness:"
+            visible: page.isCustom
+            from: -100
+            to: 100
+            stepSize: 5
+        }
+
+        QQC2.Slider {
+            id: contrast
+            Kirigami.FormData.label: "Contrast:"
+            visible: page.isCustom
+            from: 100
+            to: 400
+            stepSize: 10
+        }
+
+        QQC2.CheckBox {
+            id: dither
+            visible: page.isCustom
+            text: "Dither mid-tones"
+        }
+
+        QQC2.CheckBox {
+            id: invert
+            text: "Swap black and white"
+        }
+
+        Item {
+            Kirigami.FormData.isSection: true
+        }
+
+        QQC2.ComboBox {
+            id: theme
+            Kirigami.FormData.label: "Color:"
+            model: ["Spectrum"].concat(Palettes.list.map(p => p.name))
+        }
+
+        QQC2.CheckBox {
+            id: stopAfterIntro
+            Kirigami.FormData.label: "Animation:"
+            text: "Come to rest after appearing"
+        }
+
+        QQC2.SpinBox {
+            id: replayMinutes
+            Kirigami.FormData.label: "Replay every:"
+            enabled: stopAfterIntro.checked
+            from: 0
+            to: 720
+            textFromValue: value => value === 0 ? "never" : value + " min"
+            valueFromText: text => parseInt(text) || 0
+        }
+
+        RowLayout {
+            Kirigami.FormData.label: "Appearing:"
+
+            QQC2.Label {
+                text: "as a wave"
+            }
+            QQC2.Slider {
+                id: appearSoftness
+                from: 0
+                to: 100
+                stepSize: 1
+            }
+            QQC2.Label {
+                text: "all at once"
+            }
+        }
+
+        QQC2.SpinBox {
+            id: pixelSize
+            Kirigami.FormData.label: "Pixel size:"
+            from: 0
+            to: 96
+            textFromValue: value => value === 0 ? "auto" : value + " px"
+            valueFromText: text => parseInt(text) || 0
+        }
+
+        QQC2.Slider {
+            id: speed
+            Kirigami.FormData.label: "Speed:"
+            from: 10
+            to: 300
+            stepSize: 10
+        }
+
+        QQC2.Slider {
+            id: gap
+            Kirigami.FormData.label: "Gap between pixels:"
+            from: 0
+            to: 30
+            stepSize: 1
+        }
+
+        RowLayout {
+            Kirigami.FormData.label: "Pixel opacity:"
+
+            QQC2.Slider {
+                id: tileOpacity
+                from: 0
+                to: 100
+                stepSize: 1
+            }
+            QQC2.Label {
+                text: tileOpacity.value + "%"
             }
         }
 
         RowLayout {
-            QQC2.Button {
-                text: "Add Files…"
-                icon.name: "list-add"
-                onClicked: fileDialog.open()
+            Kirigami.FormData.label: "Shadow softness:"
+
+            QQC2.Slider {
+                id: shadowSoftness
+                from: 0
+                to: 100
+                stepSize: 1
             }
-            QQC2.Button {
-                text: "Add Folder…"
-                icon.name: "folder-new"
-                onClicked: folderDialog.open()
+            QQC2.Label {
+                text: shadowSoftness.value + "%"
+            }
+        }
+
+        RowLayout {
+            Kirigami.FormData.label: "Shadow strength:"
+
+            QQC2.Slider {
+                id: shadowStrength
+                from: 0
+                to: 60
+                stepSize: 1
+            }
+            QQC2.Label {
+                text: shadowStrength.value + "%"
             }
         }
     }
 
-    QQC2.SpinBox {
-        id: imageWidth
-        Kirigami.FormData.label: "Width in pixels:"
-        visible: page.isCustom
-        from: 32
-        to: 2048
-        stepSize: 16
-    }
-
-    QQC2.Slider {
-        id: brightness
-        Kirigami.FormData.label: "Brightness:"
-        visible: page.isCustom
-        from: -100
-        to: 100
-        stepSize: 5
-    }
-
-    QQC2.Slider {
-        id: contrast
-        Kirigami.FormData.label: "Contrast:"
-        visible: page.isCustom
-        from: 100
-        to: 400
-        stepSize: 10
-    }
-
-    QQC2.CheckBox {
-        id: dither
-        visible: page.isCustom
-        text: "Dither mid-tones"
-    }
-
-    QQC2.CheckBox {
-        id: invert
-        text: "Swap black and white"
-    }
-
-    Item {
-        Kirigami.FormData.isSection: true
-    }
-
-    QQC2.ComboBox {
-        id: theme
-        Kirigami.FormData.label: "Color:"
-        model: ["Spectrum"].concat(Palettes.list.map(p => p.name))
-    }
-
-    QQC2.CheckBox {
-        id: stopAfterIntro
-        Kirigami.FormData.label: "Animation:"
-        text: "Come to rest after appearing"
-    }
-
-    QQC2.SpinBox {
-        id: replayMinutes
-        Kirigami.FormData.label: "Replay every:"
-        enabled: stopAfterIntro.checked
-        from: 0
-        to: 720
-        textFromValue: value => value === 0 ? "never" : value + " min"
-        valueFromText: text => parseInt(text) || 0
-    }
-
     RowLayout {
-        Kirigami.FormData.label: "Appearing:"
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+        Layout.minimumHeight: Kirigami.Units.gridUnit * 20
+        spacing: 0
 
-        QQC2.Label {
-            text: "as a wave"
+        ColumnLayout {
+            Layout.maximumWidth: Kirigami.Units.gridUnit * 14
+            Layout.preferredWidth: Kirigami.Units.gridUnit * 14
+            spacing: 0
+
+            Kirigami.Separator {
+                Layout.fillWidth: true
+            }
+
+            QQC2.ScrollView {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+
+                background: Rectangle {
+                    Kirigami.Theme.inherit: false
+                    Kirigami.Theme.colorSet: Kirigami.Theme.View
+                    color: Kirigami.Theme.backgroundColor
+                }
+
+                ListView {
+                    id: foldersView
+                    headerPositioning: ListView.OverlayHeader
+                    header: Kirigami.InlineViewHeader {
+                        width: foldersView.width
+                        text: "Folders"
+                        actions: [
+                            Kirigami.Action {
+                                icon.name: "list-add-symbolic"
+                                text: "Add…"
+                                Accessible.name: "Add Folder…"
+                                onTriggered: folderDialog.open()
+                            }
+                        ]
+                    }
+                    model: page.addedFolders
+                    delegate: Kirigami.SubtitleDelegate {
+                        id: folderItem
+                        required property string modelData
+
+                        width: foldersView.width
+                        hoverEnabled: false
+                        down: false
+                        text: Pictures.fileName(modelData)
+                        subtitle: decodeURIComponent(modelData.replace(/^file:\/\//, "").replace(/[^/]*\/$/, ""))
+
+                        contentItem: RowLayout {
+                            spacing: Kirigami.Units.smallSpacing
+
+                            Kirigami.TitleSubtitle {
+                                Layout.fillWidth: true
+                                title: folderItem.text
+                                subtitle: folderItem.subtitle
+                            }
+                            QQC2.ToolButton {
+                                icon.name: "edit-delete-remove-symbolic"
+                                text: "Remove Folder"
+                                display: QQC2.Button.IconOnly
+                                onClicked: page.remove(folderItem.modelData)
+                                QQC2.ToolTip.visible: hovered
+                                QQC2.ToolTip.text: text
+                                QQC2.ToolTip.delay: Kirigami.Units.toolTipDelay
+                            }
+                            QQC2.ToolButton {
+                                icon.name: "document-open-folder"
+                                text: "Open Folder"
+                                display: QQC2.Button.IconOnly
+                                onClicked: Qt.openUrlExternally(folderItem.modelData)
+                                QQC2.ToolTip.visible: hovered
+                                QQC2.ToolTip.text: text
+                                QQC2.ToolTip.delay: Kirigami.Units.toolTipDelay
+                            }
+                        }
+                    }
+
+                    Kirigami.PlaceholderMessage {
+                        anchors.centerIn: parent
+                        width: parent.width - Kirigami.Units.largeSpacing * 4
+                        visible: foldersView.count === 0
+                        text: "No folders added"
+                    }
+                }
+            }
         }
-        QQC2.Slider {
-            id: appearSoftness
-            from: 0
-            to: 100
-            stepSize: 1
+
+        Kirigami.Separator {
+            Layout.fillHeight: true
         }
-        QQC2.Label {
-            text: "all at once"
-        }
-    }
 
-    QQC2.SpinBox {
-        id: pixelSize
-        Kirigami.FormData.label: "Pixel size:"
-        from: 0
-        to: 96
-        textFromValue: value => value === 0 ? "auto" : value + " px"
-        valueFromText: text => parseInt(text) || 0
-    }
+        ColumnLayout {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            spacing: 0
 
-    QQC2.Slider {
-        id: speed
-        Kirigami.FormData.label: "Speed:"
-        from: 10
-        to: 300
-        stepSize: 10
-    }
+            Kirigami.Separator {
+                Layout.fillWidth: true
+            }
 
-    QQC2.Slider {
-        id: gap
-        Kirigami.FormData.label: "Gap between pixels:"
-        from: 0
-        to: 30
-        stepSize: 1
-    }
+            Kirigami.InlineViewHeader {
+                Layout.fillWidth: true
+                text: "Pictures"
+                actions: [
+                    Kirigami.Action {
+                        icon.name: "list-add-symbolic"
+                        text: "Add…"
+                        Accessible.name: "Add Pictures…"
+                        onTriggered: fileDialog.open()
+                    },
+                    Kirigami.Action {
+                        icon.name: "edit-select-all-symbolic"
+                        text: "Select All"
+                        displayHint: Kirigami.DisplayHint.KeepVisible
+                        onTriggered: page.checkAll(true)
+                    },
+                    Kirigami.Action {
+                        icon.name: "edit-select-none-symbolic"
+                        text: "Select None"
+                        displayHint: Kirigami.DisplayHint.KeepVisible
+                        onTriggered: page.checkAll(false)
+                    }
+                ]
+            }
 
-    RowLayout {
-        Kirigami.FormData.label: "Pixel opacity:"
+            Kirigami.InlineMessage {
+                Layout.fillWidth: true
+                visible: page.thumbnails.every(p => page.unchecked.includes(p.id))
+                text: "No picture is ticked, so the first bundled one is shown."
+            }
 
-        QQC2.Slider {
-            id: tileOpacity
-            from: 0
-            to: 100
-            stepSize: 1
-        }
-        QQC2.Label {
-            text: tileOpacity.value + "%"
-        }
-    }
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                Kirigami.Theme.inherit: false
+                Kirigami.Theme.colorSet: Kirigami.Theme.View
+                color: Kirigami.Theme.backgroundColor
 
-    RowLayout {
-        Kirigami.FormData.label: "Shadow softness:"
+                KCM.GridView {
+                    id: grid
+                    anchors.fill: parent
+                    framedView: false
 
-        QQC2.Slider {
-            id: shadowSoftness
-            from: 0
-            to: 100
-            stepSize: 1
-        }
-        QQC2.Label {
-            text: shadowSoftness.value + "%"
-        }
-    }
+                    view.model: page.thumbnails
+                    // Ticks say what is chosen; a highlighted cell would look chosen too.
+                    view.currentIndex: -1
+                    view.implicitCellWidth: Kirigami.Units.gridUnit * 8 + Kirigami.Units.smallSpacing * 2
+                    view.implicitCellHeight: Kirigami.Units.gridUnit * 6 + Kirigami.Units.smallSpacing * 2
+                        + Kirigami.Units.gridUnit * 3
 
-    RowLayout {
-        Kirigami.FormData.label: "Shadow strength:"
+                    view.delegate: KCM.GridDelegate {
+                        id: cell
+                        required property var modelData
+                        readonly property bool ticked: !page.unchecked.includes(modelData.id)
 
-        QQC2.Slider {
-            id: shadowStrength
-            from: 0
-            to: 60
-            stepSize: 1
-        }
-        QQC2.Label {
-            text: shadowStrength.value + "%"
+                        text: modelData.name
+                        subtitle: modelData.subtitle
+                        hoverEnabled: true
+                        onClicked: page.check(modelData.id, !ticked)
+
+                        actions: [
+                            Kirigami.Action {
+                                icon.name: "edit-delete-remove"
+                                tooltip: "Remove"
+                                visible: cell.modelData.removable
+                                onTriggered: page.remove(cell.modelData.id)
+                            }
+                        ]
+
+                        // The bundled pictures are black on white.
+                        thumbnail: Rectangle {
+                            anchors.fill: parent
+                            color: "white"
+
+                            Kirigami.Icon {
+                                anchors.centerIn: parent
+                                width: Kirigami.Units.iconSizes.large
+                                height: width
+                                source: "view-preview"
+                                visible: preview.status !== Image.Ready
+                            }
+                            Image {
+                                id: preview
+                                anchors.fill: parent
+                                asynchronous: true
+                                cache: false
+                                fillMode: Image.PreserveAspectCrop
+                                sourceSize: Qt.size(Kirigami.Units.gridUnit * 16, Kirigami.Units.gridUnit * 12)
+                                source: cell.modelData.source
+                            }
+                            QQC2.CheckBox {
+                                anchors.left: parent.left
+                                anchors.top: parent.top
+                                anchors.margins: Kirigami.Units.smallSpacing
+                                checked: cell.ticked
+                                onToggled: {
+                                    page.check(cell.modelData.id, checked)
+                                    checked = Qt.binding(() => cell.ticked)
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
         }
     }
 

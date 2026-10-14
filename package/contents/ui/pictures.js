@@ -47,10 +47,6 @@ function byId(id) {
     return null
 }
 
-function find(id) {
-    return byId(id) ?? list[0]
-}
-
 function isFolder(picture) {
     return picture.endsWith("/")
 }
@@ -60,21 +56,32 @@ function fileName(url) {
     return decodeURIComponent(url.replace(/\/$/, "").split("/").pop())
 }
 
-// The pictures to choose from. Settings before 1.3 held a single picture, and
-// they still say what to show until the list has been saved once.
-function selection(pictures, legacyPicture, legacyImage) {
-    if (pictures.length > 0)
-        return Array.from(pictures)
-    if (legacyPicture === custom && legacyImage)
-        return [legacyImage]
-    return [find(legacyPicture).id]
-}
+// Settings before 1.3 held a single picture: a bundled id, or "custom" with
+// the URL of one image. They still say what to show until the settings are
+// saved again, which resets them.
 
-// Files and folders added in the settings, chosen or not.
+// Files and folders added in the settings.
 function addedImages(images, legacyImage) {
     if (images.length > 0)
         return Array.from(images)
     return legacyImage ? [legacyImage] : []
+}
+
+// Pictures to pick from: the bundled ones, then the added files and folders.
+function sources(added) {
+    return list.map(p => p.id).concat(added)
+}
+
+// Pictures that are not to be shown, folders' images among them, so that new
+// images in a folder show up without being ticked.
+function uncheckedPictures(unchecked, legacyPicture, legacyImage) {
+    const ids = list.map(p => p.id)
+    if (legacyPicture === custom && legacyImage)
+        return ids
+    const legacy = byId(legacyPicture)
+    if (legacy && legacy !== list[0])
+        return ids.filter(id => id !== legacy.id)
+    return Array.from(unchecked)
 }
 
 // Straight scrolls along a random row or column, kept away from the edges.

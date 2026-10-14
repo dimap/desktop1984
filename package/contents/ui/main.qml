@@ -8,7 +8,9 @@ WallpaperItem {
 
     PixelFlight {
         anchors.fill: parent
-        pictures: Pictures.selection(root.configuration.Pictures,
+        pictures: Pictures.sources(Pictures.addedImages(root.configuration.AddedImages,
+            root.configuration.CustomImage))
+        excluded: Pictures.uncheckedPictures(root.configuration.UncheckedPictures,
             root.configuration.Picture, root.configuration.CustomImage)
         imageWidth: root.configuration.ImageWidth
         brightness: root.configuration.Brightness / 100

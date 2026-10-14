@@ -91,7 +91,7 @@ that existing installations keep receiving updates.)
 
 | Setting | What it does |
 |---|---|
-| **Pictures** | Tick the pictures to show; each scene picks one of them. **Add Files…** and **Add Folder…** add your own; a folder stands for every image in it |
+| **Folders**, **Pictures** | At the bottom of the page, laid out as in the Slideshow wallpaper. **Add…** over the folders adds a folder, over the pictures adds files. Every picture, bundled, added or found in a folder, is a thumbnail with a tick; each scene shows one of the ticked ones. New images in a folder are ticked by themselves |
 | **Width in pixels** | How many pixels across your own pictures are reduced to; fewer means chunkier |
 | **Brightness**, **Contrast** | Tune the conversion of your own pictures to black and white |
 | **Dither mid-tones** | Render greys as patterns of dots; off gives plain black and white |
