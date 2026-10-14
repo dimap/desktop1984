@@ -83,6 +83,9 @@ ColumnLayout {
                 push(folder.get(j, "fileUrl").toString(), false)
         }
         thumbnails = all
+        // A new model makes the first cell current, and a highlighted cell
+        // would look chosen next to the ticks.
+        grid.view.currentIndex = -1
     }
 
     // Writes the lists in the current format, which retires the old single
@@ -142,52 +145,15 @@ ColumnLayout {
                 twinFormLayouts.push(appearanceRoot.parentLayout)
         }
 
-        QQC2.SpinBox {
-            id: imageWidth
-            Kirigami.FormData.label: "Width in pixels:"
-            visible: page.isCustom
-            from: 32
-            to: 2048
-            stepSize: 16
-        }
-
-        QQC2.Slider {
-            id: brightness
-            Kirigami.FormData.label: "Brightness:"
-            visible: page.isCustom
-            from: -100
-            to: 100
-            stepSize: 5
-        }
-
-        QQC2.Slider {
-            id: contrast
-            Kirigami.FormData.label: "Contrast:"
-            visible: page.isCustom
-            from: 100
-            to: 400
-            stepSize: 10
-        }
-
-        QQC2.CheckBox {
-            id: dither
-            visible: page.isCustom
-            text: "Dither mid-tones"
+        QQC2.ComboBox {
+            id: theme
+            Kirigami.FormData.label: "Color:"
+            model: ["Spectrum"].concat(Palettes.list.map(p => p.name))
         }
 
         QQC2.CheckBox {
             id: invert
             text: "Swap black and white"
-        }
-
-        Item {
-            Kirigami.FormData.isSection: true
-        }
-
-        QQC2.ComboBox {
-            id: theme
-            Kirigami.FormData.label: "Color:"
-            model: ["Spectrum"].concat(Palettes.list.map(p => p.name))
         }
 
         QQC2.CheckBox {
@@ -288,6 +254,56 @@ ColumnLayout {
             QQC2.Label {
                 text: shadowStrength.value + "%"
             }
+        }
+
+        // The bundled pictures are black and white already, so these only
+        // shape how the added ones are converted.
+        Kirigami.Separator {
+            Kirigami.FormData.isSection: true
+            Kirigami.FormData.label: "Added Pictures"
+            visible: page.isCustom
+        }
+
+        QQC2.Label {
+            Layout.maximumWidth: Kirigami.Units.gridUnit * 18
+            visible: page.isCustom
+            wrapMode: Text.WordWrap
+            font: Kirigami.Theme.smallFont
+            color: Kirigami.Theme.disabledTextColor
+            text: "How your own pictures are turned into black and white pixels. The bundled ones are not affected."
+        }
+
+        QQC2.SpinBox {
+            id: imageWidth
+            Kirigami.FormData.label: "Width in pixels:"
+            visible: page.isCustom
+            from: 32
+            to: 2048
+            stepSize: 16
+        }
+
+        QQC2.Slider {
+            id: brightness
+            Kirigami.FormData.label: "Brightness:"
+            visible: page.isCustom
+            from: -100
+            to: 100
+            stepSize: 5
+        }
+
+        QQC2.Slider {
+            id: contrast
+            Kirigami.FormData.label: "Contrast:"
+            visible: page.isCustom
+            from: 100
+            to: 400
+            stepSize: 10
+        }
+
+        QQC2.CheckBox {
+            id: dither
+            visible: page.isCustom
+            text: "Dither mid-tones"
         }
     }
 
@@ -438,8 +454,6 @@ ColumnLayout {
                     framedView: false
 
                     view.model: page.thumbnails
-                    // Ticks say what is chosen; a highlighted cell would look chosen too.
-                    view.currentIndex: -1
                     view.implicitCellWidth: Kirigami.Units.gridUnit * 8 + Kirigami.Units.smallSpacing * 2
                     view.implicitCellHeight: Kirigami.Units.gridUnit * 6 + Kirigami.Units.smallSpacing * 2
                         + Kirigami.Units.gridUnit * 3

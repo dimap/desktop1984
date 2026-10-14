@@ -92,10 +92,19 @@ that existing installations keep receiving updates.)
 | Setting | What it does |
 |---|---|
 | **Folders**, **Pictures** | At the bottom of the page, laid out as in the Slideshow wallpaper. **Add…** over the folders adds a folder, over the pictures adds files. Every picture, bundled, added or found in a folder, is a thumbnail with a tick; each scene shows one of the ticked ones. New images in a folder are ticked by themselves |
+| **Swap black and white** | Invert the picture; works for the bundled ones too |
+
+### Added Pictures
+
+These settings appear once you have added pictures of your own, and only
+change how those are turned into black and white pixels. The bundled pictures
+are black and white already and are not affected.
+
+| Setting | What it does |
+|---|---|
 | **Width in pixels** | How many pixels across your own pictures are reduced to; fewer means chunkier |
 | **Brightness**, **Contrast** | Tune the conversion of your own pictures to black and white |
 | **Dither mid-tones** | Render greys as patterns of dots; off gives plain black and white |
-| **Swap black and white** | Invert the picture; works for the bundled ones too |
 
 Only dark pixels become tiles, so a picture with a light background works best.
 
